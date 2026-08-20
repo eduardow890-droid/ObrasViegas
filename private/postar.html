@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Obras do Viegas - Nova Publicação</title>
+
+    <link rel="stylesheet" href="/css/postar.css">
+</head>
+
+<body>
+
+    <!-- Cabeçalho -->
+    <header class="app-header">
+        <div class="logo">
+            <h1>Obras do <span>Viegas</span></h1>
+        </div>
+    </header>
+
+
+    <!-- Conteúdo principal -->
+    <main class="postar-container">
+
+        <div class="postar-card">
+
+            <h2>Nova Publicação</h2>
+
+            <form id="formPost">
+
+                <!-- Tipo da publicação -->
+                <div class="form-group">
+
+                    <label>O que você deseja publicar?</label>
+
+                    <div class="tipo-post-group">
+
+                        <div class="tipo-option">
+                            <input
+                                type="radio"
+                                id="tipoServico"
+                                name="tipo"
+                                value="servico"
+                                checked
+                            >
+
+                            <label for="tipoServico">
+                                Oferecer Serviço
+                            </label>
+                        </div>
+
+
+                        <div class="tipo-option">
+                            <input
+                                type="radio"
+                                id="tipoPedido"
+                                name="tipo"
+                                value="pedido"
+                            >
+
+                            <label for="tipoPedido">
+                                Pedir Ajuda / Obra
+                            </label>
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Título -->
+                <div class="form-group">
+
+                    <label for="titulo">
+                        Título da publicação
+                    </label>
+
+                    <input
+                        type="text"
+                        id="titulo"
+                        name="titulo"
+                        placeholder="Ex: Pedreiro, Eletricista ou Preciso de Servente"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- Bairro -->
+                <div class="form-group">
+
+                    <label for="bairro">
+                        Bairro / Localidade
+                    </label>
+
+                  <select id="selectBairro" name="bairro" required>
+                        <option value="">Selecione o bairro</option>
+                        <option value="Bangu">Bangu</option>
+                        <option value="Santíssimo">Santíssimo</option>
+                        <option value="Senador Camará">Senador Camará</option>
+                        <option value="Viegas">Viegas</option>
+                        <option value="Padre Miguel">Padre Miguel</option>
+                        <option value="Realengo">Realengo</option>
+                        <option value="Outro">Outro bairro</option>
+                    </select>
+
+                        <input
+                        type="text"
+                        id="inputOutroBairro"
+                        placeholder="Digite o nome do bairro"
+                        style="display: none;">
+                        
+                </div>
+
+
+                <!-- Descrição -->
+                <div class="form-group">
+
+                    <label for="descricao">
+                        Descrição
+                    </label>
+
+                    <textarea
+                        id="descricao"
+                        name="descricao"
+                        placeholder="Descreva o serviço, experiência, necessidade, diária, orçamento etc."
+                        required
+                    ></textarea>
+
+                </div>
+
+
+                <!-- WhatsApp -->
+                <div class="form-group">
+
+                    <label for="whatsapp">
+                        WhatsApp para contato
+                    </label>
+
+                    <input
+                        type="tel"
+                        id="whatsapp"
+                        name="whatsapp"
+                        placeholder="(21) 99999-9999"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- Mensagem de retorno -->
+                <p id="mensagem"></p>
+
+
+                <!-- Botão -->
+                <button
+                    type="submit"
+                    class="btn-publicar"
+                >
+                    Publicar no Feed
+                </button>
+
+            </form>
+
+        </div>
+
+    </main>
+
+
+    <!-- Navegação -->
+    <nav class="bottom-nav">
+
+        <a href="/main" class="nav-item">
+            Home
+        </a>
+
+        <a href="/buscar" class="nav-item">
+            Buscar
+        </a>
+
+        <a href="/postar" class="nav-item btn-destaque ativo">
+            +
+        </a>
+
+        <a href="/perfil" class="nav-item">
+            Perfil
+        </a>
+
+    </nav>
+
+
+    <script src="/js/postar.js"></script>
+
+</body>
+</html>

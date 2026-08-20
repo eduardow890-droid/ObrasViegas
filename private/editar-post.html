@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Obras Viegas - Editar Publicação</title>
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/editar-post.css">
+    <script src="/js/editar-post.js" defer></script>
+</head>
+<body>
+
+    <header class="app-header">
+        <div class="logo">
+            <h1>Obras <span>Viegas</span></h1>
+        </div>
+    </header>
+
+    <main class="editar-container">
+        <section class="editar-card">
+            
+            <header class="card-header">
+                <h2>Editar publicação</h2>
+                <p>Atualize as informações da sua publicação no feed.</p>
+            </header>
+
+            <div id="mensagemStatus" class="mensagem-status" aria-live="polite"></div>
+
+            <form id="formEditarPost" class="form-editar">
+                
+                <div class="form-group">
+                    <label for="inputTitulo">Título da publicação</label>
+                    <input 
+                        type="text" 
+                        id="inputTitulo" 
+                        name="titulo" 
+                        placeholder="Ex: Pedreiro e Azulejista ou Preciso de servente" 
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="selectTipo">Tipo da publicação</label>
+                    <select id="selectTipo" name="tipo" required>
+                        <option value="servico">servico — Oferece serviço</option>
+                        <option value="pedido">pedido — Procuro ajuda</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="selectBairro">Bairro</label>
+
+                    <select id="selectBairro" name="bairro" required>
+                        <option value="">Selecione o bairro</option>
+                        <option value="Bangu">Bangu</option>
+                        <option value="Santíssimo">Santíssimo</option>
+                        <option value="Senador Camará">Senador Camará</option>
+                        <option value="Viegas">Viegas</option>
+                        <option value="Padre Miguel">Padre Miguel</option>
+                        <option value="Realengo">Realengo</option>
+                        <option value="Outro">Outro bairro</option>
+                    </select>
+
+                    <input
+                        type="text"
+                        id="inputOutroBairro"
+                        name="outroBairro"
+                        placeholder="Digite o nome do bairro"
+                        style="display: none;"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="textareaDescricao">Descrição</label>
+                    <textarea 
+                        id="textareaDescricao" 
+                        name="descricao" 
+                        placeholder="Descreva os detalhes do serviço, experiência ou orçamento..." 
+                        required
+                    ></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="inputWhatsapp">WhatsApp de contato</label>
+                    <input 
+                        type="tel" 
+                        id="inputWhatsapp" 
+                        name="whatsapp" 
+                        placeholder="(21) 99999-9999" 
+                        required
+                    >
+                </div>
+
+                <div class="botoes-grupo">
+                    <button type="submit" id="btnSalvar" class="btn-salvar">Salvar alterações</button>
+                    <a href="/main" id="btnCancelar" class="btn-cancelar">Cancelar</a>
+                </div>
+
+            </form>
+
+        </section>
+    </main>
+
+    <nav class="bottom-nav">
+        <a href="/main" class="nav-item">Home</a>
+        <a href="/buscar" class="nav-item">Buscar</a>
+        <a href="/postar" class="nav-item btn-destaque">+</a>
+        <a href="/perfil" class="nav-item">Perfil</a>
+    </nav>
+
+</body>
+</html>

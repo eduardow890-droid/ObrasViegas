@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Obras Viegas - Feed</title>
+    <link rel="stylesheet" href="/css/main.css">
+    <script src="/js/main.js" defer></script>
+</head>
+<body>
+
+    <!-- CABEÇALHO FIXO -->
+    <header class="app-header">
+        <div class="logo">
+            <h1>Obras <span>Viegas</span></h1>
+        </div>
+
+        <div class="header-usuario">
+            <span id="nomeUsuario" class="nome-usuario">Carregando...</span>
+            <a href="/perfil" class="perfil-icone">
+                <img src="/foto-perfil.jpeg" alt="Meu Perfil">
+            </a>
+            <button id="logout" class="btn-logout" title="Encerrar sessão">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                <span>Sair</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- CONTEÚDO PRINCIPAL -->
+    <main class="feed-container">
+
+        <!-- ATALHO DE BUSCA -->
+        <section class="busca-container">
+            <a href="/buscar" class="barra-busca">
+                <span class="icone-busca">🔎</span>
+                <span class="texto-busca">Buscar por pedreiro, encanador, eletricista...</span>
+            </a>
+            
+            <div class="filtros-bairro">
+                <button class="btn-filtro ativo">Todos</button>
+                <button class="btn-filtro">Viegas</button>
+                <button class="btn-filtro">Zona do Camarão</button>
+            </div>
+        </section>
+
+        <!-- CRIAR PUBLICAÇÃO -->
+        <section class="criar-post-card">
+            <a href="/postar" class="abrir-post" id="abrirModalPost">
+                <span class="icone-plus">+</span>
+                <span class="texto-postar">Precisa de uma obra ou quer divulgar seu trabalho?</span>
+            </a>
+        </section>
+
+        <!-- TÍTULO DO FEED -->
+        <div class="feed-titulo">
+            <div>
+                <h2>Publicações recentes</h2>
+                <p>Veja o que está acontecendo na comunidade.</p>
+            </div>
+        </div>
+
+        <!-- LISTA DE POSTS DINÂMICOS -->
+        <section class="lista-posts" id="listaPosts"></section>
+
+        <!-- ESTADO VAZIO -->
+        <div id="mensagemVazia" class="mensagem-vazia" hidden>
+            <div class="mensagem-vazia-icone">📋</div>
+            <h3>Nenhuma publicação ainda</h3>
+            <p>Seja o primeiro a publicar uma oportunidade ou divulgar seu serviço.</p>
+            <a href="/postar" class="btn-publicar">Criar publicação</a>
+        </div>
+
+    </main>
+
+    <!-- NAVEGAÇÃO INFERIOR -->
+    <nav class="bottom-nav">
+        <a href="/main" class="nav-item ativo">
+            <span class="nav-icone">⌂</span>
+            <span>Início</span>
+        </a>
+        <a href="/buscar" class="nav-item">
+            <span class="nav-icone">⌕</span>
+            <span>Buscar</span>
+        </a>
+        <a href="/postar" class="nav-item nav-publicar" aria-label="Criar publicação">+</a>
+        <a href="/perfil" class="nav-item">
+            <span class="nav-icone">♙</span>
+            <span>Perfil</span>
+        </a>
+    </nav>
+
+</body>
+</html>

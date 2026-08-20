@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Obras Viegas - Buscar Publicações</title>
+    <link rel="stylesheet" href="/css/buscar.css">
+    <script src="/js/buscar.js" defer></script>
+</head>
+<body>
+
+    <!-- Cabeçalho Fixo -->
+    <header class="app-header">
+        <div class="logo">
+            <h1>Obras <span>Viegas</span></h1>
+        </div>
+    </header>
+
+    <!-- Conteúdo Principal -->
+    <main class="buscar-container">
+
+        <section class="buscar-topo">
+            <h2>Encontre profissionais e serviços</h2>
+            <p>Pesquise por serviço, profissional ou bairro.</p>
+
+            <form id="formBuscar">
+
+                <input
+                    type="search"
+                    id="inputBusca"
+                    placeholder="Ex: pedreiro, eletricista..."
+                >
+
+                <select id="filtroBairro">
+                    <option value="">Todos os bairros</option>
+                    <option value="Bangu">Bangu</option>
+                    <option value="Santíssimo">Santíssimo</option>
+                    <option value="Senador Camará">Senador Camará</option>
+                    <option value="Viegas">Viegas</option>
+                    <option value="Padre Miguel">Padre Miguel</option>
+                    <option value="Realengo">Realengo</option>
+                </select>
+
+                <select id="filtroTipo">
+                    <option value="">Todos os tipos</option>
+                    <option value="servico">Oferece serviço</option>
+                    <option value="pedido">Procuro ajuda</option>
+                </select>
+
+                <button type="submit">Buscar</button>
+
+            </form>
+        </section>
+
+        <section id="listaResultados"></section>
+
+    </main>
+
+    <!-- Navegação Inferior (Mobile First) -->
+    <nav class="bottom-nav">
+        <a href="/main" class="nav-item">Home</a>
+        <a href="/buscar" class="nav-item ativo">Buscar</a>
+        <a href="/postar" class="nav-item btn-destaque">+</a>
+        <a href="/perfil" class="nav-item">Perfil</a>
+    </nav>
+
+</body>
+</html>
