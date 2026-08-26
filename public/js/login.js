@@ -1,31 +1,49 @@
-const form = document.getElementById("formLogin");// cria a constante global form
+const form = document.getElementById("formLogin");
 
-form.addEventListener('submit', async (event) => {// inicia um evento no botão do arquivo index.html
-    event.preventDefault()
-    const usuario ={// objeto javascript que será enviado ao servidor para ser verificado 
+form.addEventListener('submit', async (event) => {
+    event.preventDefault();
+
+    const usuario = {
         email: document.getElementById("email").value,
         senha: document.getElementById("senha").value
     };
 
-    const resposta = await fetch("/login", {// entra na rota /login para fazer a verificação do login
-        method: "POST",// metodo http de requisição do formLogin
-        headers:{
-            "Content-Type":"application/json"//tipo de formatação que sera enviado
-        },
-        body: JSON.stringify(usuario)// formatação enviada ao req.body
-    });
-    const data = await resposta.json();// espera a resposta da requisição do /login
+    try {
 
-    console.log(data);
+        const resposta = await fetch("/login", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(usuario)
+        });
 
-    if(data.sucesso) {// após a resposta aqui é visto se o login foi realizado com sucesso
-        alert(data.mensagem)// resposta do servido 
-        window.location.href = "/main";// rota de verificação da session
-    }else{
-        alert(data.mensagem)
-    };
+        const data = await resposta.json();
+
+        console.log(data);
+
+        if (data.sucesso) {
+
+            alert(data.mensagem);
+
+            window.location.href = "/main";
+
+            return;
+        }
+
+        alert(data.mensagem || "Não foi possível realizar o login.");
+
+    } catch (erro) {
+
+        console.error("Erro ao realizar login:", erro);
+
+        alert("Não foi possível conectar ao servidor. Tente novamente.");
+    }
 });
 
-document.getElementById('FazerCadastro').addEventListener('click', ()=>{// leva o usuario que não possui cadastro para realizar em cadastro.html
+document.getElementById('FazerCadastro').addEventListener('click', () => {
+
     window.location.href = "cadastro.html";
+
 });
+

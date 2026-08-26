@@ -1,0 +1,300 @@
+/* =========================================================
+   1. VARIÁVEIS E TEMAS (DESIGN SYSTEM)
+========================================================= */
+:root {
+    --cor-fundo: #0b0f19;
+    --cor-card: #151d2a;
+    --cor-card-hover: #1c273a;
+    --cor-borda: rgba(255, 255, 255, 0.08);
+    --cor-borda-foco: #3b82f6;
+
+    --cor-texto: #f8fafc;
+    --cor-texto-secundario: #94a3b8;
+    --cor-texto-mutado: #64748b;
+
+    --cor-primaria: #3b82f6;
+    --cor-primaria-hover: #2563eb;
+    --cor-primaria-glow: rgba(59, 130, 246, 0.25);
+    
+    --cor-whats: #25d366;
+    --cor-whats-hover: #1da851;
+    --cor-whats-glow: rgba(37, 211, 102, 0.2);
+
+    --cor-erro: #ef4444;
+    --cor-erro-hover: #dc2626;
+    --cor-sucesso: #22c55e;
+
+    --altura-header: 64px;
+    --altura-nav: 68px;
+    --raio-card: 16px;
+    --raio-input: 12px;
+    --raio-controle: 12px;
+    --largura-conteudo: 620px;
+
+    --sombras-card: 0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
+    --sombra-card: var(--sombras-card);
+    --transicao-suave: cubic-bezier(0.16, 1, 0.3, 1);
+    --duracao-rapida: 160ms;
+    --duracao-padrao: 240ms;
+}
+
+/* =========================================================
+   2. RESET E BASE
+========================================================= */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    background-color: var(--cor-fundo);
+    color: var(--cor-texto);
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    min-height: 100vh;
+    padding-top: var(--altura-header);
+    padding-bottom: calc(var(--altura-nav) + 24px);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+button, input, select, textarea { 
+    font: inherit; 
+    transition: border-color var(--duracao-padrao) ease, 
+                box-shadow var(--duracao-padrao) ease, 
+                background-color var(--duracao-padrao) ease, 
+                color var(--duracao-padrao) ease, 
+                transform var(--duracao-rapida) ease;
+}
+
+button, a { 
+    user-select: none; 
+    -webkit-user-select: none; 
+}
+
+button:active, a:active { 
+    transform: translateY(1px); 
+}
+
+/* Scrollbar Personalizado */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: var(--cor-fundo); }
+::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 4px; }
+
+/* =========================================================
+   3. HEADER GLASSMORPHISM (COMPARTILHADO)
+========================================================= */
+.app-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: var(--altura-header);
+    background: rgba(15, 23, 42, 0.85);
+    border-bottom: 1px solid var(--cor-borda);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    z-index: 100;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+}
+
+.logo h1 {
+    font-size: 19px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    color: var(--cor-texto);
+}
+
+.logo h1 span {
+    color: var(--cor-primaria);
+}
+
+.header-usuario {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.nome-usuario {
+    color: var(--cor-texto-secundario);
+    font-size: 13px;
+    font-weight: 600;
+    max-width: 120px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.perfil-icone {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 2px solid var(--cor-borda);
+    transition: border-color 0.2s ease;
+}
+
+.perfil-icone:hover {
+    border-color: var(--cor-primaria);
+}
+
+.perfil-icone img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.btn-logout {
+    background: rgba(239, 68, 68, 0.1);
+    color: var(--cor-erro);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s ease;
+}
+
+.btn-logout:hover {
+    background: var(--cor-erro);
+    color: white;
+}
+
+/* =========================================================
+   4. BOTTOM NAV (COMPARTILHADO)
+========================================================= */
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: var(--altura-nav);
+    background: rgba(11, 15, 25, 0.95);
+    border-top: 1px solid var(--cor-borda);
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    padding: 0 12px;
+    z-index: 1000;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+}
+
+.nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    color: var(--cor-texto-mutado);
+    font-size: 11px;
+    font-weight: 500;
+    text-decoration: none;
+    flex: 1;
+    height: 100%;
+    transition: all 0.2s ease;
+}
+
+.nav-item svg, .nav-icone {
+    width: 22px;
+    height: 22px;
+    transition: transform 0.2s ease, stroke 0.2s ease;
+}
+
+.nav-item.ativo {
+    color: var(--cor-primaria);
+    font-weight: 600;
+}
+
+.nav-item.ativo svg {
+    transform: translateY(-2px);
+}
+
+.nav-item:hover {
+    color: var(--cor-texto);
+}
+
+/* Botão Central (+) Flutuante */
+.nav-item.btn-destaque {
+    position: relative;
+    top: -16px;
+    width: 52px;
+    height: 52px;
+    max-width: 52px;
+    border-radius: 50%;
+    background: var(--cor-primaria);
+    color: #ffffff;
+    font-size: 28px;
+    font-weight: 400;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
+    border: 4px solid var(--cor-fundo);
+    transition: transform 0.2s ease, background-color 0.2s ease;
+    flex: none;
+}
+
+.nav-item.btn-destaque:hover {
+    background: var(--cor-primaria-hover);
+    transform: scale(1.05);
+}
+
+/* =========================================================
+   5. FORMULÁRIOS E INPUTS PADRONIZADOS
+========================================================= */
+.form-group { 
+    display: flex; 
+    flex-direction: column; 
+    gap: 7px; 
+}
+
+.form-group label { 
+    color: var(--cor-texto-secundario); 
+    font-size: 13px; 
+    font-weight: 600; 
+}
+
+.form-group input, 
+.form-group select, 
+.form-group textarea {
+    background: var(--cor-fundo);
+    border: 1px solid var(--cor-borda);
+    border-radius: var(--raio-input);
+    color: var(--cor-texto);
+    min-height: 46px;
+    outline: none;
+    padding: 11px 14px;
+    width: 100%;
+}
+
+.form-group textarea { 
+    min-height: 120px; 
+    resize: vertical; 
+}
+
+.form-group input:focus, 
+.form-group select:focus, 
+.form-group textarea:focus { 
+    border-color: var(--cor-primaria); 
+    box-shadow: 0 0 0 3px var(--cor-primaria-glow);
+}
+
+/* RESPONSIVIDADE BASE */
+@media (max-width: 480px) {
+    .app-header { padding: 0 16px; }
+}

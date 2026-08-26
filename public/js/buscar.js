@@ -3,7 +3,8 @@ const inputBuscar = document.getElementById("inputBusca");
 const filtroBairro = document.getElementById("filtroBairro");
 const filtroTipo = document.getElementById("filtroTipo");
 const listaResultados = document.getElementById("listaResultados");
-
+const usuario = document.getElementById("usuario");
+const fotoPerfil = document.getElementById("fotoPerfil");
 
 function criarPost(post) {
 
@@ -49,14 +50,17 @@ function criarPost(post) {
         `${tipoTexto} • ${post.bairro}`;
 
 
-    const avatar = document.createElement("img");
+   const avatar = document.createElement("img");
 
-    avatar.classList.add("post-avatar");
+avatar.classList.add("post-avatar");
 
-    avatar.src = "avatar-pedreiro.jpeg";
+if (post.foto) {
+    avatar.src = post.foto;
+} else {
+    avatar.src = "/avatar-padrao.jpg";
+}
 
-    avatar.alt = `Foto de ${post.nome}`;
-
+avatar.alt = `Foto de ${post.nome}`;
 
     const conteudo = document.createElement("div");
 
@@ -96,6 +100,18 @@ function criarPost(post) {
 
 
     conteudo.appendChild(descricao);
+
+    if (post.foto_post) {
+    const imagem = document.createElement("img");
+
+    imagem.classList.add("post-imagem");
+
+    imagem.src = post.foto_post;
+
+    imagem.alt = `Imagem da publicação: ${post.titulo}`;
+
+    conteudo.appendChild(imagem);
+}
 
 
     footer.appendChild(whatsapp);
@@ -149,6 +165,9 @@ formBuscar.addEventListener("submit", async (event) => {
 
     }
 
+    listaResultados.textContent = "Buscando publicações..."
+
+    try{
 
     const resposta = await fetch(
         `/posts?${parametros.toString()}`
@@ -160,6 +179,11 @@ formBuscar.addEventListener("submit", async (event) => {
 
     console.log("Resultado:", dados);
 
+   if (resposta.status === 401) {
+    alert("Sua sessão expirou. Faça login novamente.");
+    window.location.href = "/index.html";
+    return;
+}
 
     listaResultados.innerHTML = "";
 
@@ -180,5 +204,79 @@ formBuscar.addEventListener("submit", async (event) => {
         listaResultados.appendChild(artigo);
 
     });
+    }catch(erro){
+
+        console.error("Erro de conexão ao buscar publicações:", erro);
+
+        listaResultados.textContent =
+            "Não foi possível conectar ao servidor.";
+    }
+    
 
 });
+
+async function carregarUsuario() {
+
+    try{
+
+    const resposta = await fetch('/me');// entrar na rota /me
+
+    if(!resposta.ok){// se a resposta nao for sucesso irá retornar para index.html
+        window.location.href = "index.html";
+        return;
+    }
+
+    const data = await resposta.json();
+
+    document.getElementById('usuario').textContent =  // Adicionar uma saudação para o usuario dentro de main.html
+    data.usuario.nome;
+
+     if (data.usuario.foto) {
+        fotoPerfil.src = data.usuario.foto;
+        }
+    
+    return data.usuario;
+
+} catch (erro) {
+        console.error("Erro ao carregar usuário:", erro);
+
+        alert("Não foi possível conectar ao servidor.");
+
+        return null
+    }
+}
+const btnLogout = document.getElementById("btnLogout");
+
+if (btnLogout) {
+    btnLogout.addEventListener("click", async () => {
+
+        const confirmacao = confirm("Deseja realmente sair?");
+
+        if (!confirmacao) {
+            return;
+        }
+
+        try {
+
+            const resposta = await fetch("/logout", {
+                method: "POST"
+            });
+
+            const data = await resposta.json();
+
+            if (data.sucesso) {
+                window.location.href = "/index.html";
+                return;
+            }
+
+            alert(data.mensagem || "Não foi possível sair.");
+
+        } catch (erro) {
+
+            console.error("Erro ao realizar logout:", erro);
+
+            alert("Erro ao conectar com o servidor.");
+        }
+    });
+}
+carregarUsuario();

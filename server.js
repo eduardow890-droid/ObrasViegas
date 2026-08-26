@@ -1,288 +1,356 @@
-const express =  require('express');
+require("dotenv").config();
+
+const express = require("express");
+const path = require("path");
+const session = require("express-session");
+const SqliteStore = require("better-sqlite3-session-store")(session);
+const bcrypt = require("bcrypt");
+const multer = require("multer");
+const fs = require("fs");
+const rateLimit = require("express-rate-limit");
+const helmet = require("helmet");
+
+const db = require("./database/database");
+
+// =============================================================================
+// Configuração e middlewares
+// =============================================================================
+
 const app = express();
 const porta = 3000;
-const path = require('path');
-const session = require("express-session");
-const db = require("./database/database");
-const bcrypt = require("bcrypt");
 
+const storage = multer.diskStorage({
+    destination: path.join(__dirname, "uploads", "perfil"),
+    filename: (req, file, callback) => {
+        const extensao = path.extname(file.originalname);
+        callback(null, `perfil-${req.session.usuarioId}${extensao}`);
+    }
+});
 
+const upload = multer({ 
+    storage,
+      limits: {
+        fileSize: 5 * 1024 * 1024
+    },
+    fileFilter: filtroImagem
+});
 
+const storagePosts = multer.diskStorage({
+
+    destination: path.join(__dirname, "uploads", "posts"),
+
+    filename: (req, file, callback) => {
+        const extensao = path.extname(file.originalname);
+
+        const nomeArquivo = `post-${Date.now()}${extensao}`;
+
+        callback(null, nomeArquivo);
+    }
+});
+
+const uploadPost = multer({
+    storage: storagePosts,
+        limits: {
+        fileSize: 5 * 1024 * 1024
+    },
+    fileFilter: filtroImagem
+});
+
+app.use(helmet());
 
 app.use(session({
-    secret: "chave-de-autentificacao",
-    resave: false,
-    saveUninitialized: false,
-    cookie:{
-        httpOnly:true,
-        sameSite: "lax"
-    }
-}))
+    store: new SqliteStore({
+        client: db,
+        expired: {
+            clear: true,
+            intervalMs: 15 * 60 * 1000
+        }
+    }),
 
-app.use(express.json());// permite que o expresse interprete o JSON do req.body
-// Arquivos públicos (CSS, JavaScript, imagens e as telas de login/cadastro).
+    secret: process.env.SESSION_SECRET,
+
+    resave: false,
+
+    saveUninitialized: false,
+
+  cookie: {
+    httpOnly: true,
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+    maxAge: 1000 * 60 * 60 * 24
+}
+}));
+
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
 
-function verificarLogin(req, res, next){
-    if(!req.session.usuarioId){
+function verificarLogin(req, res, next) {
+    if (!req.session.usuarioId) {
         return res.redirect("/index.html");
     }
-    //impede o navegador de armazenar a pagina privada em cache
-    res.set("Cache-Control", "no-store");
 
+    res.set("Cache-Control", "no-store");
     next();
 }
 
-function verificarApi(req, res, next){
-    if(!req.session.usuarioId){
+function verificarApi(req, res, next) {
+    if (!req.session.usuarioId) {
         return res.status(401).json({
             sucesso: false,
             mensagem: "Você precisa estar logado"
         });
-
     }
+
     next();
 }
+const loginLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutos
+    max: 5,                    // 5 tentativas por IP nesse período
+    standardHeaders: true,
+    legacyHeaders: false,
+    handler: (req, res) => {
+        return res.status(429).json({
+            sucesso: false,
+            mensagem: "Muitas tentativas de login. Tente novamente em alguns minutos."
+        });
+    }
+});
+// =============================================================================
+// Rotas públicas: autenticação
+// =============================================================================
 
+app.post("/cadastrar", async (req, res) => {
+    const { nome, email, senha } = req.body;
 
-app.post("/cadastrar", async(req, res) => {// Criar a rota Post /cadastrar para recebe os dados do formulario enviados pelo script.js
-
-    console.log("Dados recebidos:", req.body)
-
-    const {nome, email, senha} = req.body;//crias os campos do formulário dentro do servidor
-
-    // Verificação se os campos estão preencidos
-    if(!nome || !email || !senha){
+    if (!nome || !email || !senha) {
         return res.status(400).json({
             sucesso: false,
             mensagem: "Preencha todos os campos"
         });
     }
-    //Verificação para os campos não ficarem vazios
-    if(
-        nome.trim() === "" ||
-        email.trim() === "" ||
-        senha.trim() === ""
-    ) {
+
+    if (nome.trim() === "" || email.trim() === "" || senha.trim() === "") {
         return res.status(400).json({
             sucesso: false,
             mensagem: "Os campos não podem ficar vazios"
-        })
-    }
-    // Verificação numero de caracteres
-    if (senha.length < 8){
-        return res.status(400).json({
-        sucesso: false,
-        mensagem: "A senha deve conter pelo menos 8 caracteres"
         });
     }
-    // Verificação de Senha forte
-    const senhaValida =
-       /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/;
 
-    if(!senhaValida.test(senha)){
+    const senhaValida = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/;
+
+    if (!senhaValida.test(senha)) {
         return res.status(400).json({
             sucesso: false,
             mensagem: "A senha deve ter pelo menos 8 caracteres, uma letra, um numero e um caractere especial"
-        })
+        });
     }
-    
-    try{// o try vai tentar executar o codigo caso tenha algum erro ao inver de quebrar sera passado para o catch
-        const senhaHash = await bcrypt.hash(senha, 10);// essa linha significa "pegue a senha recebida e aplique o bcrypt e espere o resultado"
-        const inserirUsuario = db.prepare(`
+    const nomeLimpo = nome.trim();
+    const emailLimpo = email.trim().toLowerCase();
+
+    try {
+
+
+        const senhaHash = await bcrypt.hash(senha, 10);
+        db.prepare(`
             INSERT INTO usuarios (nome, email, senha)
             VALUES (?, ?, ?)
-            `);// Aqui o banco esta sendo preparado para receber as informações enviadas pelo JavaScript
+        `).run(nomeLimpo, emailLimpo, senhaHash);
 
-            inserirUsuario.run(nome, email, senhaHash);// run é oque vai executar o comando com os valores enviados
-            
-            res.status(201).json({// retorna a situação dentro do console
-                sucesso: true,// validação para retorno do usuario para o index.html após cadastro realizado
-                mensagem: "Usuario cadastrado"        
-                
-        
-            });
-    } catch (erro){// o catch vai tratar o erro no cadastro nesse caso se ja existe o email que estão tentando cadastrar
-        if (erro.code === "SQLITE_CONSTRAINT_UNIQUE"){// esse trecho tem uma regra definida no banco de dados dizendo que dois usuarios não podem ter o mesmo email
+        return res.status(201).json({
+            sucesso: true,
+            mensagem: "Usuario cadastrado"
+        });
+    } catch (erro) {
+        if (erro.code === "SQLITE_CONSTRAINT_UNIQUE") {
             return res.status(409).json({
                 sucesso: false,
                 mensagem: "Email já cadastrado"
             });
         }
 
-        console.log(erro);
-
+        console.error("Erro ao cadastrar usuário:", erro);
         return res.status(500).json({
             sucesso: false,
             mensagem: "Erro ao cadastrar o usuário"
         });
-    } 
-    
+    }
 });
 
-app.post('/login', async (req, res) =>{// rota de login
-    const {email, senha} = req.body;// objetos que serão requisitados para autentificação e entrada na private/main
+app.post("/login", loginLimiter, async (req, res) => {
+    const { email, senha } = req.body;
 
-    const buscarUsuario = db.prepare(`
+    if (!email || !senha) {
+        return res.status(400).json({
+            sucesso: false,
+            mensagem: "Informe o email e a senha."
+        });
+    }
+    const emailLimpo = email.trim().toLowerCase();
+
+    const usuario = db.prepare(`
         SELECT id, nome, email, senha
         FROM usuarios
         WHERE email = ?
-        `);
-        // nesse trecho o SELECT define oq sera procurado
-        //o FROM define a tabela que sera procurado
-        // o WHERE verifica se o valor do email cadastrado é igual ao digitado pelo usuario
-    const usuario =  buscarUsuario.get(email);// Executa a consulta usando o email enviado pelo usuário 
-    
-    if(!usuario){
-        return res.status(401).json({
-            sucesso: false,
-            mensagem: "Email ou Senha incorretos"
-        })
-    };
-    // Verifica se existe um usuário cadastrado com esse email
-    
-    const senhaValida = await bcrypt.compare(senha, usuario.senha);// Compara a senha digitada com o hash armazenado no banco
+    `).get(emailLimpo);
 
-    if(!senhaValida){
+    if (!usuario || !(await bcrypt.compare(senha, usuario.senha))) {
         return res.status(401).json({
             sucesso: false,
             mensagem: "Email ou Senha incorretos"
         });
-    };
-    // verifica se a senha que foi requisitada é igual a que esta inserida no array
-
-    req.session.usuarioId = usuario.id;// Armazena na sessão o ID do usuário que foi autenticado
-
-    return res.status(200).json({// Responde ao front end que o login foi realizado
-        sucesso: true,
-        mensagem: "Login Realizado com sucesso"
-    })
-
-});
-
-app.get("/me", (req, res) => {// rota de autentificação do usuario
-    if (!req.session.usuarioId){
-        return res.status(401).json({
-            autenticado: false,
-            mensagem: "Não autenticado"
-        });
     }
-    const buscarSessao = db.prepare(`
-        SELECT id, nome, email
-        FROM usuarios
-        WHERE id = ?
-        `); 
-        // nesse trecho o SELECT define oq sera procurado
-        //o FROM define a tabela que sera procurado
-        // o WHERE vai fazer a comparação do item procurado para o item enviado
 
-        const usuario = buscarSessao.get(req.session.usuarioId);// aqui é enviado para o buscarSessao para la ser visto se o valor é igual
+    req.session.regenerate((erro) => {
 
-    if(!usuario){// verifica a existencia do usuario pelo id
-        return res.status(401).json({
-            autenticado: false,
-            mensagem: "Usuário não encontrado"
-        });
-    }
-    return res.json({// retorna a o resultado caso o resultado de id.session seja igual o id do array
-        autenticado: true,
-        usuario: {
-            id: usuario.id,
-            nome: usuario.nome,
-            email: usuario.email
+        if (erro) {
+            console.error("Erro ao criar sessão:", erro);
+
+            return res.status(500).json({
+                sucesso: false,
+                mensagem: "Erro ao realizar login."
+            });
         }
+
+        req.session.usuarioId = usuario.id;
+
+        return res.json({
+            sucesso: true,
+            mensagem: "Login realizado com sucesso"
         });
-
+    });
 });
-//-------------------------------rotas----------------------------------
-app.get('/main', verificarLogin,(req, res) =>{
-    res.sendFile(path.join(__dirname, "private", "main.html"));
-});
-
-app.get("/buscar", verificarLogin, (req, res) => {
-    res.sendFile(path.join(__dirname, "private", "buscar.html"));
-});
-
-app.get("/postar", verificarLogin, (req, res) => {
-    res.sendFile(path.join(__dirname, "private", "postar.html"));
-});
-
-app.get("/perfil", verificarLogin, (req, res) => {
-    res.sendFile(path.join(__dirname, "private", "perfil.html"));
-});
-app.get("/editar-post", verificarLogin, (req, res) => {
-    res.sendFile(path.join(__dirname, "private", "editar-post.html"));
-});
-//-----------------------------------------------------------------------------------------
 app.post("/logout", (req, res) => {
     req.session.destroy((erro) => {
-
-        if(erro){
+        if (erro) {
             return res.status(500).json({
                 sucesso: false,
                 mensagem: "Erro ao Sair"
             });
         }
-        res.json({
+
+        return res.json({
             sucesso: true,
             mensagem: "Logout realizado"
-        })
-    })
-});
-//--------------------------------Aplicações para a main.html/js------------------------------------
-app.post("/posts", verificarApi, (req, res)=>{
-    
-    const {tipo, titulo, bairro, descricao, whatsapp} = (req.body);
-
-    const usuarioId =  req.session.usuarioId;
-
-    console.log("Dados do post:", {
-        tipo,
-        titulo,
-        bairro,
-        descricao,
-        whatsapp
+        });
     });
+});
 
-    if (!usuarioId){
+app.get("/me", (req, res) => {
+    if (!req.session.usuarioId) {
         return res.status(401).json({
-            sucesso: false,
-            mensagem: "Você precisa estar logado"
+            autenticado: false,
+            mensagem: "Não autenticado"
         });
     }
 
-    if(!tipo || !titulo || !bairro || !descricao || !whatsapp){
+    const usuario = db.prepare(`
+        SELECT id, nome, email, foto
+        FROM usuarios
+        WHERE id = ?
+    `).get(req.session.usuarioId);
+
+    if (!usuario) {
+        return res.status(401).json({
+            autenticado: false,
+            mensagem: "Usuário não encontrado"
+        });
+    }
+
+    return res.json({ autenticado: true, usuario });
+});
+
+// =============================================================================
+// Rotas privadas: páginas da aplicação
+// =============================================================================
+
+function enviarPaginaPrivada(nomeArquivo) {
+    return (req, res) => {
+        res.sendFile(path.join(__dirname, "private", nomeArquivo));
+    };
+}
+
+app.get("/main", verificarLogin, enviarPaginaPrivada("main.html"));
+app.get("/buscar", verificarLogin, enviarPaginaPrivada("buscar.html"));
+app.get("/postar", verificarLogin, enviarPaginaPrivada("postar.html"));
+app.get("/perfil", verificarLogin, enviarPaginaPrivada("perfil.html"));
+app.get("/editar-post", verificarLogin, enviarPaginaPrivada("editar-post.html"));
+app.get("/editar-perfil", verificarLogin, enviarPaginaPrivada("editar-perfil.html"));
+
+// =============================================================================
+// Rotas de publicações
+// =============================================================================
+
+app.post("/posts", verificarApi,uploadPost.single("foto"),async (req, res) => {
+    const { tipo, titulo, bairro, descricao, whatsapp } = req.body;
+
+    if (!tipo || !titulo || !bairro || !descricao || !whatsapp) {
         return res.status(400).json({
             sucesso: false,
-            mensagem:  "Preencha todos os campos"
+            mensagem: "Preencha todos os campos"
         });
     }
-    try{
-        const inserirPostagem = db.prepare(`
+    const tituloLimpo = titulo.trim();
+    const bairroLimpo = bairro.trim();
+    const descricaoLimpa = descricao.trim();
+    const whatsappLimpo = whatsapp.trim();
+    const tipoLimpo = tipo.trim();
+
+    if (
+    tituloLimpo === "" ||
+    bairroLimpo === "" ||
+    descricaoLimpa === "" ||
+    whatsappLimpo === "" ||
+    tipoLimpo === ""
+) {
+    return res.status(400).json({
+        sucesso: false,
+        mensagem: "Os campos não podem ficar vazios"
+    });
+}
+
+
+try {
+
+        if (req.file) {
+
+    const imagemValida = await validarImagem(req.file.path);
+
+    if (!imagemValida) {
+
+        fs.unlinkSync(req.file.path);
+
+        return res.status(400).json({
+            sucesso: false,
+            mensagem: "O arquivo enviado não é uma imagem válida."
+        });
+    }
+}
+
+        const caminhoFoto = req.file
+        ? `/uploads/posts/${req.file.filename}`
+        : null;
+
+        db.prepare(`
             INSERT INTO posts (
-            usuario_id,
-            tipo,
-            titulo,
-            bairro,
-            descricao,
-            whatsapp
-            )VALUES(?, ?, ?, ?, ?, ?)
-            
-        `)
-        inserirPostagem.run(usuarioId, tipo, titulo, bairro, descricao, whatsapp)
-        
-        const posts = db.prepare("SELECT * FROM posts").all();
+                usuario_id, tipo, titulo, bairro, descricao, whatsapp, foto
+            ) VALUES (?, ?, ?, ?, ?, ?, ?)
+        `).run(
+            req.session.usuarioId,
+            tipoLimpo,
+            tituloLimpo,
+            bairroLimpo,
+            descricaoLimpa,
+            whatsappLimpo,
+            caminhoFoto
+        );
 
-        console.log("Posts cadastrados:", posts);
-
-        res.status(201).json({
+        return res.status(201).json({
             sucesso: true,
-            mensagem: "Post puclicado com sucesso"
-        })
-    }catch(erro){
-
-        console.log(erro);
-
+            mensagem: "Post publicado com sucesso"
+        });
+    } catch (erro) {
+        console.error("Erro ao publicar post:", erro);
         return res.status(500).json({
             sucesso: false,
             mensagem: "Erro ao publicar o post"
@@ -290,10 +358,10 @@ app.post("/posts", verificarApi, (req, res)=>{
     }
 });
 
-app.get("/posts", verificarApi, (req, res) =>{
-
-    const buscarPosts = db.prepare(`
-        SELECT
+app.get("/posts", verificarApi, (req, res) => {
+    const { busca, bairro, tipo } = req.query;
+  let sql = `
+    SELECT
         posts.id,
         posts.usuario_id,
         posts.tipo,
@@ -301,222 +369,494 @@ app.get("/posts", verificarApi, (req, res) =>{
         posts.bairro,
         posts.descricao,
         posts.whatsapp,
+        posts.foto AS foto_post,
         posts.created_at,
-        usuarios.nome
-        FROM posts
-        INNER JOIN usuarios
-        ON posts.usuario_id = usuarios.id
-        ORDER BY posts.created_at DESC
-        `);
+        usuarios.nome,
+        usuarios.foto
+    FROM posts
+    INNER JOIN usuarios ON posts.usuario_id = usuarios.id
+    WHERE 1 = 1
+`;
+    const valores = [];
 
-        const posts = buscarPosts.all();
+    if (busca && busca.trim() !== "") {
+        sql += `
+            AND (
+                posts.titulo LIKE ?
+                OR posts.descricao LIKE ?
+                OR usuarios.nome LIKE ?
+            )
+        `;
+        const termoBusca = `%${busca.trim()}%`;
+        valores.push(termoBusca, termoBusca, termoBusca);
+    }
 
-        return res.json({
-            sucesso: true,
-            posts: posts
+    if (bairro && bairro.trim() !== "") {
+        sql += " AND posts.bairro = ?";
+        valores.push(bairro.trim());
+    }
+
+    if (tipo && tipo.trim() !== "") {
+        sql += " AND posts.tipo = ?";
+        valores.push(tipo.trim());
+    }
+
+    sql += " ORDER BY posts.created_at DESC";
+
+    try {
+        const posts = db.prepare(sql).all(...valores);
+        return res.json({ sucesso: true, posts });
+    } catch (erro) {
+        console.error("Erro ao buscar posts:", erro);
+        return res.status(500).json({
+            sucesso: false,
+            mensagem: "Erro ao buscar publicações"
         });
-    })
-    
-    app.delete("/posts/:id", verificarApi, (req, res) =>{
+    }
+});
 
-        if(!req.session.usuarioId){// verifica se existe um id na sessão
-            return res.status(401).json({
-                sucesso: false,
-                mensagem: "Você precisa estar logado"
-            });
-        }
+app.get("/posts/:id", verificarApi, (req, res) => {
 
-        const postId = req.params.id; // pega o id da URL e armazena ele na constante
+    try {
 
-
-        // esta se preparando para pesquisar o req.params.id pela const post
-        const buscarPost = db.prepare(`
-            SELECT id, usuario_id
+        const post = db.prepare(`
+            SELECT
+                id,
+                usuario_id,
+                titulo,
+                tipo,
+                bairro,
+                descricao,
+                whatsapp,
+                foto AS foto_post
             FROM posts
             WHERE id = ?
-            `);
+        `).get(req.params.id);
 
-        const post = buscarPost.get(postId);// faz a busca no banco de dados
-        
-        if(!post){// esta verificando se a busca de cima terá algum retorno se não tiver ira retorna nao encontrado
+        if (!post) {
             return res.status(404).json({
                 sucesso: false,
                 mensagem: "Post não encontrado"
             });
         }
-        // O dono do post é o mesmo usuário que está logado? Se não for, bloqueia.
-        if  (post.usuario_id !== req.session.usuarioId){
-            return res.status(403).json({
-                sucesso: false,
-                mensagem: "Você não pode excluir esse post"
-            });
-        };
 
-        // prepara para excluir pelo id
-        const excluirPost = db.prepare(`
-            DELETE FROM posts
+        return res.json(post);
+
+    } catch (erro) {
+
+        console.error("Erro ao buscar post:", erro);
+
+        return res.status(500).json({
+            sucesso: false,
+            mensagem: "Erro ao buscar o post"
+        });
+    }
+});
+
+app.put("/posts/:id", verificarApi, (req, res) => {
+
+    const { titulo, tipo, bairro, descricao, whatsapp } = req.body;
+
+    if (!titulo || !tipo || !bairro || !descricao || !whatsapp) {
+        return res.status(400).json({
+            sucesso: false,
+            mensagem: "Preencha todos os campos."
+        });
+    }
+
+    const tituloLimpo = titulo.trim();
+    const tipoLimpo = tipo.trim();
+    const bairroLimpo = bairro.trim();
+    const descricaoLimpa = descricao.trim();
+    const whatsappLimpo = whatsapp.trim();
+
+    if (
+        tituloLimpo === "" ||
+        tipoLimpo === "" ||
+        bairroLimpo === "" ||
+        descricaoLimpa === "" ||
+        whatsappLimpo === ""
+    ) {
+        return res.status(400).json({
+            sucesso: false,
+            mensagem: "Os campos não podem ficar vazios."
+        });
+    }
+
+    const post = db.prepare(`
+        SELECT id, usuario_id
+        FROM posts
+        WHERE id = ?
+    `).get(req.params.id);
+
+    if (!post) {
+        return res.status(404).json({
+            sucesso: false,
+            mensagem: "Post não encontrado."
+        });
+    }
+
+    if (post.usuario_id !== req.session.usuarioId) {
+        return res.status(403).json({
+            sucesso: false,
+            mensagem: "Você não pode editar esse post."
+        });
+    }
+
+    try {
+
+        db.prepare(`
+            UPDATE posts
+            SET titulo = ?,
+                tipo = ?,
+                bairro = ?,
+                descricao = ?,
+                whatsapp = ?
             WHERE id = ?
-            `);
-
-            excluirPost.run(postId);// envia o id que será excluido e executa
+        `).run(
+            tituloLimpo,
+            tipoLimpo,
+            bairroLimpo,
+            descricaoLimpa,
+            whatsappLimpo,
+            req.params.id
+        );
 
         return res.json({
             sucesso: true,
-            mensagem: "Post excluido com sucesso"
-        })
-    })
-    app.get("/posts/:id",verificarApi, (req, res) => {
-        if(!req.session.usuarioId){
-            return res.status(401).json({
-                sucesso: false,
-                mensagem: "Você precisa estar logado"
-            })
-        }
+            mensagem: "Post atualizado com sucesso."
+        });
 
-        const postId = req.params.id;
+    } catch (erro) {
 
-        const buscarId = db.prepare(`
-            SELECT id, usuario_id, titulo, tipo, bairro, descricao, whatsapp
-            FROM posts
-            WHERE id = ?`)
+        console.error("Erro ao atualizar post:", erro);
 
-       const post = buscarId.get(postId);
+        return res.status(500).json({
+            sucesso: false,
+            mensagem: "Erro ao atualizar o post."
+        });
+    }
+});
 
-       if(!post){
+app.delete("/posts/:id", verificarApi, (req, res) => {
+
+    const post = db.prepare(`
+        SELECT id, usuario_id, foto
+        FROM posts
+        WHERE id = ?
+    `).get(req.params.id);
+
+    if (!post) {
         return res.status(404).json({
             sucesso: false,
             mensagem: "Post não encontrado"
         });
-       }
+    }
 
-        return res.json(post);
-        
-    })
+    if (post.usuario_id !== req.session.usuarioId) {
+        return res.status(403).json({
+            sucesso: false,
+            mensagem: "Você não pode excluir esse post"
+        });
+    }
 
-    app.put("/posts/:id", verificarApi, (req, res) =>{
+    try {
 
-        if(!req.session.usuarioId){
-            return res.status(401).json({
-                sucesso: false,
-                mensagem: "Você precisa estar logado"
-            })
-        };
+        // Exclui a imagem do servidor
+        if (post.foto) {
 
-        const postId = req.params.id;
+            const caminhoFoto = path.join(
+                __dirname,
+                post.foto.replace(/^\/uploads\//, "uploads/")
+            );
 
-        const {titulo, tipo, bairro, descricao, whatsapp } = req.body;
-
-        const buscarPost = db.prepare(`
-            SELECT id, usuario_id
-            FROM posts
-            WHERE id = ?
-            `);
-
-            const post = buscarPost.get(postId);
-
-        if (!post){
-            return res.status(404).json({
-                sucesso: false,
-                mensagem: "Post não encontrado"
-            })
+            if (fs.existsSync(caminhoFoto)) {
+                fs.unlinkSync(caminhoFoto);
+            }
         }
 
-        if(post.usuario_id !== req.session.usuarioId){
-            return res.status(403).json({
-                sucesso: false,
-                mensagem: "Você não pode editar esse post"
-            })
-        }
-        
-        const atualizarPost = db.prepare
-        (`UPDATE posts
-            SET titulo = ?,
-            tipo = ?,
-            bairro = ?,
-            descricao = ?,
-            whatsapp = ?
+        // Exclui o post do banco
+        db.prepare(`
+            DELETE FROM posts
             WHERE id = ?
-        `)
-
-       const atualizacao = atualizarPost.run(titulo,
-            tipo,
-            bairro,
-            descricao,
-            whatsapp,
-            postId
-        );
+        `).run(req.params.id);
 
         return res.json({
-            sucesso:true,
-            mensagem: "Post atualizado com sucesso"
+            sucesso: true,
+            mensagem: "Post excluído com sucesso"
         });
-        
 
-    })
+    } catch (erro) {
 
-    app.get("/posts", verificarApi, (req, res) =>{
+        console.error("Erro ao excluir post:", erro);
 
-        const { busca, bairro, tipo } = req.query;
+        return res.status(500).json({
+            sucesso: false,
+            mensagem: "Erro ao excluir o post"
+        });
+    }
+});
 
-        let sql = `
-        SELECT
-            posts.id,
-            posts.usuario_id,
-            posts.tipo,
-            posts.titulo,
-            posts.bairro,
-            posts.descricao,
-            posts.whatsapp,
-            posts.created_at,
-            usuarios.nome
+app.get("/carregarPosts", verificarApi, (req, res) => {
+
+    try {
+
+        const posts = db.prepare(`
+            SELECT
+                posts.id,
+                posts.usuario_id,
+                posts.tipo,
+                posts.titulo,
+                posts.bairro,
+                posts.descricao,
+                posts.whatsapp,
+                posts.foto,
+                posts.created_at,
+                usuarios.nome
             FROM posts
-            INNER JOIN usuarios
-            ON posts.usuario_id = usuarios.id
-            WHERE 1 = 1 `;
-
-            const valores = [];
-
-            if(busca){
-                sql +=`
-                    AND (
-                        posts.titulo LIKE ?
-                        OR posts.descricao LIKE ?
-                        OR usuarios.nome LIKE ?
-            )
-                        `;
-
-                   const termoBusca = `%${busca}%`;
-
-                   valores.push(
-                    termoBusca,
-                    termoBusca,
-                    termoBusca
-                   )
-            };
-            if (bairro){
-                sql += `
-                AND posts.bairro = ?
-                `;
-
-                valores.push(bairro);
-            };
-            if(tipo){
-                sql += `AND posts.tipo = ?
-                `;
-                valores.push(tipo);
-            }
-            sql += `
+            INNER JOIN usuarios ON posts.usuario_id = usuarios.id
+            WHERE posts.usuario_id = ?
             ORDER BY posts.created_at DESC
-            `;
+        `).all(req.session.usuarioId);
 
-            const buscarPosts = db.prepare(sql);
-            const posts = buscarPosts.all(...valores);
-            return res.json({
-                sucesso: true,
-                posts: posts
+        return res.json({
+            sucesso: true,
+            posts
+        });
+
+    } catch (erro) {
+
+        console.error("Erro ao carregar posts do usuário:", erro);
+
+        return res.status(500).json({
+            sucesso: false,
+            mensagem: "Erro ao carregar suas publicações."
+        });
+    }
+});
+
+// =============================================================================
+// Rotas de perfil
+// =============================================================================
+
+app.put("/perfil", verificarApi, upload.single("foto"), async (req, res) => {
+    try {
+
+        const { nome, email } = req.body;
+        const usuarioId = req.session.usuarioId;
+
+        // ============================================================
+        // Validação dos campos
+        // ============================================================
+
+        if (!nome || !email) {
+            return res.status(400).json({
+                sucesso: false,
+                mensagem: "Preencha todos os campos."
             });
-    })
-//------------------------------------Porta do servidor------------------------------------------
-app.listen(porta, () => {
-  console.log(`Servidor rodando em http://localhost:${porta}`);
+        }
+
+        const nomeLimpo = nome.trim();
+        const emailLimpo = email.trim().toLowerCase();
+
+        if (nomeLimpo === "" || emailLimpo === "") {
+            return res.status(400).json({
+                sucesso: false,
+                mensagem: "Os campos não podem ficar vazios."
+            });
+        }
+
+        // ============================================================
+        // Busca a foto atual do usuário
+        // ============================================================
+
+        const usuario = db.prepare(`
+            SELECT id, foto
+            FROM usuarios
+            WHERE id = ?
+        `).get(usuarioId);
+
+        if (!usuario) {
+            return res.status(404).json({
+                sucesso: false,
+                mensagem: "Usuário não encontrado."
+            });
+        }
+
+        // ============================================================
+        // Validação da nova imagem
+        // ============================================================
+
+        if (req.file) {
+
+            const imagemValida = await validarImagem(req.file.path);
+
+            if (!imagemValida) {
+
+                fs.unlinkSync(req.file.path);
+
+                return res.status(400).json({
+                    sucesso: false,
+                    mensagem: "O arquivo enviado não é uma imagem válida."
+                });
+            }
+        }
+
+        // ============================================================
+        // Atualização com nova foto
+        // ============================================================
+
+        if (req.file) {
+
+            const novaFoto = `/uploads/perfil/${req.file.filename}`;
+
+            db.prepare(`
+                UPDATE usuarios
+                SET nome = ?, email = ?, foto = ?
+                WHERE id = ?
+            `).run(
+                nomeLimpo,
+                emailLimpo,
+                novaFoto,
+                usuarioId
+            );
+
+            // ========================================================
+            // Exclui a foto antiga
+            // ========================================================
+
+            if (usuario.foto) {
+
+                const caminhoFotoAntiga = path.join(
+                    __dirname,
+                    usuario.foto.replace(/^\/uploads\//, "uploads/")
+                );
+
+                if (
+                    fs.existsSync(caminhoFotoAntiga) &&
+                    caminhoFotoAntiga !== req.file.path
+                ) {
+                    fs.unlinkSync(caminhoFotoAntiga);
+                }
+            }
+
+        } else {
+
+            // ========================================================
+            // Atualização sem alteração da foto
+            // ========================================================
+
+            db.prepare(`
+                UPDATE usuarios
+                SET nome = ?, email = ?
+                WHERE id = ?
+            `).run(
+                nomeLimpo,
+                emailLimpo,
+                usuarioId
+            );
+        }
+
+        return res.json({
+            sucesso: true,
+            mensagem: "Perfil atualizado com sucesso."
+        });
+
+    } catch (erro) {
+
+        console.error("Erro ao atualizar perfil:", erro);
+
+        if (
+            erro.code === "SQLITE_CONSTRAINT_UNIQUE" ||
+            erro.message.includes("UNIQUE constraint failed: usuarios.email")
+        ) {
+            return res.status(409).json({
+                sucesso: false,
+                mensagem: "Este e-mail já está sendo utilizado por outro usuário."
+            });
+        }
+
+        return res.status(500).json({
+            sucesso: false,
+            mensagem: "Erro interno ao atualizar o perfil."
+        });
+    }
+});
+
+// =============================================================================
+// Configurações do MULTER
+// =============================================================================
+
+app.use((erro, req, res, next) => {
+
+    if (erro instanceof multer.MulterError) {
+
+        if (erro.code === "LIMIT_FILE_SIZE") {
+            return res.status(400).json({
+                sucesso: false,
+                mensagem: "A imagem deve ter no máximo 5 MB."
+            });
+        }
+
+        return res.status(400).json({
+            sucesso: false,
+            mensagem: "Erro ao enviar a imagem."
+        });
+    }
+
+    if (erro.message === "Formato de imagem não permitido.") {
+        return res.status(400).json({
+            sucesso: false,
+            mensagem: "Formato de imagem não permitido. Use JPG, PNG ou WEBP."
+        });
+    }
+
+    console.error("Erro no servidor:", erro);
+
+    return res.status(500).json({
+        sucesso: false,
+        mensagem: "Erro interno do servidor."
+    });
+});
+
+function filtroImagem(req, file, callback) {
+
+    const tiposPermitidos = [
+        "image/jpeg",
+        "image/png",
+        "image/webp"
+    ];
+
+    if (tiposPermitidos.includes(file.mimetype)) {
+        callback(null, true);
+    } else {
+        callback(new Error("Formato de imagem não permitido."));
+    }
+}
+
+async function validarImagem(caminho) {
+
+    const { fileTypeFromFile } = await import("file-type");
+
+    const tipo = await fileTypeFromFile(caminho);
+
+    if (!tipo) {
+        return false;
+    }
+
+    const tiposPermitidos = [
+        "image/jpeg",
+        "image/png",
+        "image/webp"
+    ];
+
+    return tiposPermitidos.includes(tipo.mime);
+}
+
+// =============================================================================
+// Inicialização
+// =============================================================================
+
+app.listen(porta, "0.0.0.0", () => {
+    console.log(`Servidor rodando em http://localhost:${porta}`);
 });

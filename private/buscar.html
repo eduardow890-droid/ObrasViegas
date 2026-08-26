@@ -1,67 +1,108 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+    <link rel="icon" type="image/png" href="/favicon.png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Obras Viegas - Buscar Publicações</title>
+    <link rel="stylesheet" href="/css/global.css">
     <link rel="stylesheet" href="/css/buscar.css">
     <script src="/js/buscar.js" defer></script>
+    <script src="/js/animations.js" defer></script>
 </head>
-<body>
+<body class="pagina-pronta">
 
-    <!-- Cabeçalho Fixo -->
+    <!-- Header Padronizado -->
     <header class="app-header">
         <div class="logo">
             <h1>Obras <span>Viegas</span></h1>
         </div>
+        <div class="header-usuario">
+            <span id="usuario" class="nome-usuario">Usuário</span>
+            <div class="perfil-icone">
+            <img
+                id="fotoPerfil"
+                src="/img/avatar-padrao.jpg"
+                alt="Foto de perfil"
+            >       
+            </div>
+            <button id="btnLogout" class="btn-logout" type="button" aria-label="Sair da conta">Sair</button>
+        </div>
     </header>
 
     <!-- Conteúdo Principal -->
-    <main class="buscar-container">
+    <main class="buscar-container animacao-entrada">
 
         <section class="buscar-topo">
             <h2>Encontre profissionais e serviços</h2>
             <p>Pesquise por serviço, profissional ou bairro.</p>
 
             <form id="formBuscar">
+                <div class="form-group">
+                    <label for="inputBusca" class="sr-only">Pesquisar por serviço ou profissional</label>
+                    <input
+                        type="search"
+                        id="inputBusca"
+                        placeholder="Ex: pedreiro, eletricista..."
+                    >
+                </div>
 
-                <input
-                    type="search"
-                    id="inputBusca"
-                    placeholder="Ex: pedreiro, eletricista..."
-                >
+                <div class="form-group">
+                    <label for="filtroBairro" class="sr-only">Filtrar por bairro</label>
+                    <select id="filtroBairro" aria-label="Filtrar por bairro">
+                        <option value="">Todos os bairros</option>
+                        <option value="Bangu">Bangu</option>
+                        <option value="Santíssimo">Santíssimo</option>
+                        <option value="Senador Camará">Senador Camará</option>
+                        <option value="Viegas">Viegas</option>
+                        <option value="Padre Miguel">Padre Miguel</option>
+                        <option value="Realengo">Realengo</option>
+                    </select>
+                </div>
 
-                <select id="filtroBairro">
-                    <option value="">Todos os bairros</option>
-                    <option value="Bangu">Bangu</option>
-                    <option value="Santíssimo">Santíssimo</option>
-                    <option value="Senador Camará">Senador Camará</option>
-                    <option value="Viegas">Viegas</option>
-                    <option value="Padre Miguel">Padre Miguel</option>
-                    <option value="Realengo">Realengo</option>
-                </select>
+                <div class="form-group">
+                    <label for="filtroTipo" class="sr-only">Filtrar por tipo</label>
+                    <select id="filtroTipo" aria-label="Filtrar por tipo de anúncio">
+                        <option value="">Todos os tipos</option>
+                        <option value="servico">Oferece serviço</option>
+                        <option value="pedido">Procuro ajuda</option>
+                    </select>
+                </div>
 
-                <select id="filtroTipo">
-                    <option value="">Todos os tipos</option>
-                    <option value="servico">Oferece serviço</option>
-                    <option value="pedido">Procuro ajuda</option>
-                </select>
-
-                <button type="submit">Buscar</button>
-
+                <button type="submit" class="btn-buscar">Buscar</button>
             </form>
         </section>
 
-        <section id="listaResultados"></section>
+        <section id="listaResultados" class="lista-posts"></section>
 
     </main>
 
-    <!-- Navegação Inferior (Mobile First) -->
+    <!-- Navegação Inferior Padronizada -->
     <nav class="bottom-nav">
-        <a href="/main" class="nav-item">Home</a>
-        <a href="/buscar" class="nav-item ativo">Buscar</a>
-        <a href="/postar" class="nav-item btn-destaque">+</a>
-        <a href="/perfil" class="nav-item">Perfil</a>
+        <a href="/main" class="nav-item">
+            <svg class="nav-icone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+            </svg>
+            <span>Início</span>
+        </a>
+
+        <a href="/buscar" class="nav-item ativo">
+            <svg class="nav-icone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <span>Buscar</span>
+        </a>
+
+        <a href="/postar" class="nav-item btn-destaque" aria-label="Criar publicação">+</a>
+
+        <a href="/perfil" class="nav-item">
+            <svg class="nav-icone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+            <span>Perfil</span>
+        </a>
     </nav>
 
 </body>

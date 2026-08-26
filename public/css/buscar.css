@@ -1,230 +1,221 @@
-/* Reset básico e fontes */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-}
+/* =========================================================
+   ESTILOS ESPECÍFICOS - PÁGINA DE BUSCAR
+========================================================= */
 
-body {
-    background-color: #0F172A; /* Azul marinho profundo */
-    color: #F1F5F9;
-    min-height: 100vh;
-    padding-top: 60px; /* Espaço para o cabeçalho fixo */
-    padding-bottom: 70px; /* Espaço para o menu inferior fixo */
-}
-
-/* 1. Cabeçalho Fixo */
-.app-header {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 60px;
-    background-color: #1E293B;
-    border-bottom: 1px solid #334155;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 16px;
-    z-index: 100;
-}
-
-.app-header .logo h1 {
-    font-size: 18px;
-    font-weight: 700;
-    color: #F1F5F9;
-}
-
-.app-header .logo h1 span {
-    color: #3B82F6;
-}
-
-/* 2. Container de Busca */
 .buscar-container {
     width: 100%;
-    max-width: 500px;
+    max-width: var(--largura-conteudo);
     margin: 0 auto;
     padding: 20px 16px;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
 }
 
 .buscar-topo {
-    background-color: #1E293B;
-    border: 1px solid #334155;
-    border-radius: 12px;
+    background: var(--cor-card);
+    border: 1px solid var(--cor-borda);
+    border-radius: var(--raio-card);
+    box-shadow: var(--sombras-card);
     padding: 20px;
+    margin-bottom: 20px;
 }
 
 .buscar-topo h2 {
     font-size: 18px;
-    color: #F1F5F9;
+    font-weight: 700;
+    color: var(--cor-texto);
     margin-bottom: 4px;
 }
 
 .buscar-topo p {
+    color: var(--cor-texto-secundario);
     font-size: 13px;
-    color: #94A3B8;
     margin-bottom: 16px;
-    border-bottom: 1px solid #334155;
-    padding-bottom: 10px;
 }
 
-/* 3. Formulário e Campos */
 #formBuscar {
     display: flex;
     flex-direction: column;
     gap: 12px;
 }
 
-#formBuscar input[type="search"],
+/* =========================================================
+   SELECTS
+========================================================= */
+
 #formBuscar select {
-    width: 100%;
-    padding: 12px;
-    background-color: #0F172A;
-    border: 1px solid #334155;
-    border-radius: 8px;
-    color: #F1F5F9;
-    font-size: 14px;
-    outline: none;
-    transition: border-color 0.2s ease;
-}
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
 
-#formBuscar input[type="search"]:focus,
-#formBuscar select:focus {
-    border-color: #3B82F6;
-}
+    background-color: var(--cor-fundo);
 
-#formBuscar button[type="submit"] {
-    width: 100%;
-    padding: 12px;
-    background-color: #3B82F6;
-    color: #FFFFFF;
-    border: none;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 600;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+
+    padding-right: 40px;
     cursor: pointer;
-    margin-top: 4px;
-    transition: background-color 0.2s ease;
 }
 
-#formBuscar button[type="submit"]:hover {
-    background-color: #2563EB;
+/* =========================================================
+   INPUT DE BUSCA
+========================================================= */
+
+#inputBusca::-webkit-search-decoration,
+#inputBusca::-webkit-search-cancel-button,
+#inputBusca::-webkit-search-results-button,
+#inputBusca::-webkit-search-results-decoration {
+    -webkit-appearance: none;
 }
 
-/* 4. Lista de Resultados */
-#listaResultados {
+/* =========================================================
+   BOTÃO BUSCAR
+========================================================= */
+
+.btn-buscar {
+    width: 100%;
+    min-height: 48px;
+
+    background: var(--cor-primaria);
+    color: #ffffff;
+
+    border: none;
+    border-radius: var(--raio-input);
+
+    font-size: 14px;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    box-shadow: 0 4px 12px var(--cor-primaria-glow);
+
+    transition:
+        background-color 0.2s ease,
+        transform 0.2s var(--transicao-suave);
+}
+
+.btn-buscar:hover {
+    background: var(--cor-primaria-hover);
+    transform: translateY(-1px);
+}
+
+.btn-buscar:active {
+    transform: translateY(1px);
+}
+
+/* =========================================================
+   IMAGEM DA PUBLICAÇÃO
+========================================================= */
+
+.post-imagem {
+    width: 100%;
+    max-height: 400px;
+
+    object-fit: cover;
+
+    border-radius: 12px;
+
+    margin-top: 15px;
+
+    display: block;
+}
+/* =========================================================
+   LISTA E CARDS DE PUBLICAÇÃO
+========================================================= */
+
+.lista-posts {
     display: flex;
     flex-direction: column;
-    gap: 14px;
-}
-/* 4.1 Cards dos resultados */
-.post-card {
-    background-color: #1E293B;
-    border: 1px solid #334155;
-    border-radius: 12px;
-    padding: 16px;
+    gap: 16px;
 }
 
+.post-card {
+    background: var(--cor-card);
+    border: 1px solid var(--cor-borda);
+    border-radius: var(--raio-card);
+    box-shadow: var(--sombras-card);
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* Header do Card */
 .post-header {
     display: flex;
     align-items: center;
-    gap: 10px;
-    margin-bottom: 12px;
+    gap: 12px;
 }
 
 .post-avatar {
-    width: 45px;
-    height: 45px;
-    min-width: 45px;
-    min-height: 45px;
+    width: 44px;
+    height: 44px;
     border-radius: 50%;
     object-fit: cover;
+    border: 1px solid var(--cor-borda);
 }
 
 .post-autor-info h3 {
-    font-size: 14px;
-    color: #F1F5F9;
-    margin-bottom: 3px;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--cor-texto);
+    margin: 0;
 }
 
 .especialidade {
     font-size: 12px;
-    color: #94A3B8;
+    color: var(--cor-texto-secundario);
+    margin-top: 2px;
 }
 
+/* Conteúdo e Título */
 .post-titulo {
-    font-size: 17px;
-    color: #F1F5F9;
-    margin-bottom: 8px;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--cor-texto);
+    margin: 0;
 }
 
-.post-conteudo p {
+.post-conteudo {
     font-size: 14px;
+    color: var(--cor-texto);
     line-height: 1.5;
-    color: #CBD5E1;
 }
 
+.post-imagem {
+    width: 100%;
+    max-height: 400px;
+    object-fit: cover;
+    border-radius: 12px;
+    margin-top: 12px;
+    display: block;
+}
+
+/* Footer e Botão WhatsApp */
 .post-footer {
-    margin-top: 14px;
+    margin-top: 4px;
 }
 
 .btn-whatsapp {
-    display: inline-block;
-    width: 100%;
-    padding: 10px;
-    text-align: center;
-    background-color: #22C55E;
-    color: #FFFFFF;
-    text-decoration: none;
-    border-radius: 8px;
-    font-size: 13px;
-    font-weight: 600;
-}
-
-/* 5. Menu Inferior Fixo */
-.bottom-nav {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 60px;
-    background-color: #1E293B;
-    border-top: 1px solid #334155;
     display: flex;
-    justify-content: space-around;
     align-items: center;
-    z-index: 100;
-}
-
-.nav-item {
-    color: #94A3B8;
-    text-decoration: none;
-    font-size: 12px;
-    font-weight: 500;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.nav-item.ativo {
-    color: #3B82F6;
-}
-
-.btn-destaque {
-    background-color: #3B82F6;
-    color: #FFFFFF;
-    width: 42px;
-    height: 42px;
-    border-radius: 50%;
-    display: flex;
     justify-content: center;
-    align-items: center;
-    font-size: 24px;
-    font-weight: bold;
-    margin-bottom: 10px;
-    box-shadow: 0 4px 10px rgba(59, 130, 246, 0.4);
+    width: 100%;
+    min-height: 44px;
+    background-color: #25D366;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 700;
+    text-decoration: none;
+    border-radius: var(--raio-input);
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.btn-whatsapp:hover {
+    background-color: #1ebd59;
+    transform: translateY(-1px);
+}
+
+.btn-whatsapp:active {
+    transform: translateY(1px);
 }

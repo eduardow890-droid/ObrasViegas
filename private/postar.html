@@ -1,99 +1,77 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+    <link rel="icon" type="image/png" href="/favicon.png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Obras do Viegas - Nova Publicação</title>
-
+    <title>Obras Viegas - Nova Publicação</title>
+    <link rel="stylesheet" href="/css/global.css">
     <link rel="stylesheet" href="/css/postar.css">
+    <script src="/js/animations.js" defer></script>
 </head>
+<body class="pagina-pronta">
 
-<body>
-
-    <!-- Cabeçalho -->
+    <!-- Header Padrão Feed -->
     <header class="app-header">
-        <div class="logo">
-            <h1>Obras do <span>Viegas</span></h1>
+    <div class="logo">
+        <h1>Obras <span>Viegas</span></h1>
+    </div>
+
+    <div class="header-usuario">
+
+        <span id="usuario" class="nome-usuario"></span>
+
+        <div class="perfil-icone">
+            <img
+                id="fotoPerfil"
+                src="/img/avatar-padrao.jpg"
+                alt="Foto de perfil"
+            >
         </div>
-    </header>
 
+        <button
+            id="btnLogout"
+            class="btn-logout"
+            type="button"
+        >
+            Sair
+        </button>
 
-    <!-- Conteúdo principal -->
-    <main class="postar-container">
+    </div>
+</header>
 
+    <!-- Form Container -->
+    <main class="postar-container animacao-entrada">
         <div class="postar-card">
-
             <h2>Nova Publicação</h2>
 
             <form id="formPost">
 
-                <!-- Tipo da publicação -->
+                <!-- Opções de Tipo -->
                 <div class="form-group">
-
                     <label>O que você deseja publicar?</label>
-
                     <div class="tipo-post-group">
-
                         <div class="tipo-option">
-                            <input
-                                type="radio"
-                                id="tipoServico"
-                                name="tipo"
-                                value="servico"
-                                checked
-                            >
-
-                            <label for="tipoServico">
-                                Oferecer Serviço
-                            </label>
+                            <input type="radio" id="tipoServico" name="tipo" value="servico" checked>
+                            <label for="tipoServico">Oferecer Serviço</label>
                         </div>
-
-
                         <div class="tipo-option">
-                            <input
-                                type="radio"
-                                id="tipoPedido"
-                                name="tipo"
-                                value="pedido"
-                            >
-
-                            <label for="tipoPedido">
-                                Pedir Ajuda / Obra
-                            </label>
+                            <input type="radio" id="tipoPedido" name="tipo" value="pedido">
+                            <label for="tipoPedido">Pedir Ajuda / Obra</label>
                         </div>
-
                     </div>
-
                 </div>
-
 
                 <!-- Título -->
                 <div class="form-group">
-
-                    <label for="titulo">
-                        Título da publicação
-                    </label>
-
-                    <input
-                        type="text"
-                        id="titulo"
-                        name="titulo"
-                        placeholder="Ex: Pedreiro, Eletricista ou Preciso de Servente"
-                        required
-                    >
-
+                    <label for="titulo">Título da publicação</label>
+                    <input type="text" id="titulo" name="titulo" placeholder="Ex: Pedreiro, Eletricista ou Preciso de Servente" required>
                 </div>
-
 
                 <!-- Bairro -->
                 <div class="form-group">
-
-                    <label for="bairro">
-                        Bairro / Localidade
-                    </label>
-
-                  <select id="selectBairro" name="bairro" required>
+                    <label for="selectBairro">Bairro / Localidade</label>
+                    <select id="selectBairro" name="bairro" required>
                         <option value="">Selecione o bairro</option>
                         <option value="Bangu">Bangu</option>
                         <option value="Santíssimo">Santíssimo</option>
@@ -103,93 +81,71 @@
                         <option value="Realengo">Realengo</option>
                         <option value="Outro">Outro bairro</option>
                     </select>
-
-                        <input
-                        type="text"
-                        id="inputOutroBairro"
-                        placeholder="Digite o nome do bairro"
-                        style="display: none;">
-                        
+                    <input type="text" id="inputOutroBairro" placeholder="Digite o nome do bairro" class="campo-outro-bairro">
                 </div>
-
 
                 <!-- Descrição -->
                 <div class="form-group">
-
-                    <label for="descricao">
-                        Descrição
-                    </label>
-
-                    <textarea
-                        id="descricao"
-                        name="descricao"
-                        placeholder="Descreva o serviço, experiência, necessidade, diária, orçamento etc."
-                        required
-                    ></textarea>
-
+                    <label for="descricao">Descrição</label>
+                    <textarea id="descricao" name="descricao" placeholder="Descreva o serviço, experiência, necessidade, diária, orçamento etc." required></textarea>
                 </div>
 
+                <!-- Foto da publicação -->
+                <div class="form-group">
+                    <label for="fotoPost">Foto da publicação</label>
+
+                    <input
+                        type="file"
+                        id="fotoPost"
+                        name="foto"
+                        accept="image/*"
+                        class="input-foto-post"
+                    >
+                </div>
 
                 <!-- WhatsApp -->
                 <div class="form-group">
-
-                    <label for="whatsapp">
-                        WhatsApp para contato
-                    </label>
-
-                    <input
-                        type="tel"
-                        id="whatsapp"
-                        name="whatsapp"
-                        placeholder="(21) 99999-9999"
-                        required
-                    >
-
+                    <label for="whatsapp">WhatsApp para contato</label>
+                    <input type="tel" id="whatsapp" name="whatsapp" placeholder="(21) 99999-9999" required>
                 </div>
 
+                <p id="mensagem" class="mensagem-status"></p>
 
-                <!-- Mensagem de retorno -->
-                <p id="mensagem"></p>
-
-
-                <!-- Botão -->
-                <button
-                    type="submit"
-                    class="btn-publicar"
-                >
-                    Publicar no Feed
-                </button>
+                <!-- Botão de Envio -->
+                <button type="submit" class="btn-publicar">Publicar no Feed</button>
 
             </form>
-
         </div>
-
     </main>
 
-
-    <!-- Navegação -->
+    <!-- Bottom Nav Padrão Feed -->
     <nav class="bottom-nav">
-
         <a href="/main" class="nav-item">
-            Home
+            <svg class="nav-icone" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+            </svg>
+            <span>Início</span>
         </a>
 
         <a href="/buscar" class="nav-item">
-            Buscar
+            <svg class="nav-icone" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <span>Buscar</span>
         </a>
 
-        <a href="/postar" class="nav-item btn-destaque ativo">
-            +
-        </a>
+        <a href="/postar" class="nav-item btn-destaque ativo" aria-label="Criar publicação">+</a>
 
         <a href="/perfil" class="nav-item">
-            Perfil
+            <svg class="nav-icone" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+            <span>Perfil</span>
         </a>
-
     </nav>
 
-
     <script src="/js/postar.js"></script>
-
 </body>
 </html>

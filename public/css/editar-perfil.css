@@ -1,0 +1,240 @@
+.editar-perfil-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin: 0 auto;
+    max-width: var(--largura-conteudo);
+    padding: 24px 16px;
+    width: 100%;
+}
+
+/* =========================
+   APRESENTAÇÃO
+   ========================= */
+
+.editar-perfil-topo {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.editar-perfil-kicker {
+    color: var(--cor-primaria);
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.editar-perfil-topo h2 {
+    font-size: 22px;
+    margin: 2px 0 4px;
+}
+
+.editar-perfil-topo p {
+    color: var(--cor-texto-secundario);
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+/* =========================
+   CARD DO FORMULÁRIO
+   ========================= */
+
+.editar-perfil-card {
+    background: var(--cor-card);
+    border: 1px solid var(--cor-borda);
+    border-radius: var(--raio-card);
+    box-shadow: var(--sombras-card);
+    padding: 24px;
+}
+
+#formEditarPerfil {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+/* =========================
+   CAMPOS DO FORMULÁRIO
+   ========================= */
+
+.form-grupo {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+.form-grupo label {
+    color: var(--cor-texto-secundario);
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.form-grupo input {
+    background: var(--cor-fundo);
+    border: 1px solid var(--cor-borda);
+    border-radius: var(--raio-input);
+    color: var(--cor-texto);
+    min-height: 46px;
+    outline: none;
+    padding: 11px 14px;
+    width: 100%;
+}
+
+.form-grupo input:focus {
+    border-color: var(--cor-primaria);
+    box-shadow: 0 0 0 3px var(--cor-primaria-glow);
+}
+
+.form-grupo input::placeholder {
+    color: var(--cor-texto-mutado);
+}
+
+/* =========================
+   MENSAGEM DE STATUS
+   ========================= */
+
+.mensagem-perfil {
+    border-radius: var(--raio-input);
+    font-size: 13px;
+    line-height: 1.5;
+    min-height: 0;
+}
+
+.mensagem-perfil:empty {
+    display: none;
+}
+
+.mensagem-perfil.sucesso {
+    background: rgba(34, 197, 94, 0.12);
+    color: var(--cor-sucesso);
+    padding: 10px 14px;
+}
+
+.mensagem-perfil.erro {
+    background: rgba(239, 68, 68, 0.12);
+    color: var(--cor-erro);
+    padding: 10px 14px;
+}
+
+/* =========================
+   AÇÕES DO FORMULÁRIO
+   ========================= */
+
+.editar-perfil-acoes {
+    display: flex;
+    gap: 12px;
+    margin-top: 6px;
+}
+
+.btn-cancelar,
+.btn-salvar {
+    align-items: center;
+    border: none;
+    border-radius: var(--raio-input);
+    cursor: pointer;
+    display: flex;
+    flex: 1;
+    font-size: 14px;
+    font-weight: 600;
+    justify-content: center;
+    padding: 13px 16px;
+    text-align: center;
+}
+
+.btn-cancelar {
+    background: var(--cor-fundo);
+    border: 1px solid var(--cor-borda);
+    color: var(--cor-texto-secundario);
+}
+
+.btn-cancelar:hover {
+    background: var(--cor-card-hover);
+    color: var(--cor-texto);
+}
+
+.btn-salvar {
+    background: var(--cor-primaria);
+    color: #ffffff;
+}
+
+.btn-salvar:hover {
+    background: var(--cor-primaria-hover);
+}
+
+/* =========================
+   RESPONSIVIDADE
+   ========================= */
+
+@media (max-width: 480px) {
+
+    .editar-perfil-container {
+        padding: 20px 16px;
+    }
+
+    .editar-perfil-topo h2 {
+        font-size: 20px;
+    }
+
+    .editar-perfil-card {
+        padding: 18px;
+    }
+
+    .editar-perfil-acoes {
+        flex-direction: column-reverse;
+        gap: 10px;
+    }
+
+    .btn-cancelar,
+    .btn-salvar {
+        flex: 1 1 100%;
+    }
+}
+/* =========================
+   FOTO DE PERFIL
+   ========================= */
+
+.foto-perfil-container {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.foto-perfil-preview {
+    border: 2px solid var(--cor-borda);
+    border-radius: 50%;
+    height: 120px;
+    overflow: hidden;
+    width: 120px;
+}
+
+.foto-perfil-preview img {
+    display: block;
+    height: 100%;
+    object-fit: cover;
+    width: 100%;
+}
+
+.btn-escolher-foto {
+    background: var(--cor-fundo);
+    border: 1px solid var(--cor-borda);
+    border-radius: var(--raio-input);
+    color: var(--cor-texto);
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 10px 16px;
+    text-align: center;
+}
+
+.btn-escolher-foto:hover {
+    background: var(--cor-card-hover);
+}
+
+.foto-perfil-info {
+    color: var(--cor-texto-mutado);
+    font-size: 12px;
+    margin: 0;
+    text-align: center;
+}

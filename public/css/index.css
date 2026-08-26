@@ -1,4 +1,4 @@
-        /* Reset básico e fontes */
+/* Reset e Estrutura */
 * {
     margin: 0;
     padding: 0;
@@ -7,7 +7,7 @@
 }
 
 body {
-    background-color: #0F172A; /* Azul marinho profundo de fundo */
+    background-color: #0F172A;
     color: #F1F5F9;
     min-height: 100vh;
     display: flex;
@@ -16,25 +16,44 @@ body {
     padding: 20px;
 }
 
-/* Container do Form */
+/* Card Principal */
 .conteiner {
-    background-color: #1E293B; /* Azul petróleo para o cartão */
+    background-color: #1E293B;
     width: 100%;
-    max-width: 400px; /* Largura ideal para celulares */
-    padding: 32px 24px;
-    border-radius: 12px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    max-width: 380px;
+    padding: 36px 28px;
+    border-radius: 16px;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
     border: 1px solid #334155;
 }
 
-/* Formulário e alinhamento */
+/* Logo */
+#logo {
+    display: block;
+    width: 100%;
+    max-width: 160px;
+    height: auto;
+    margin: 0 auto 12px auto;
+    object-fit: contain;
+}
+
+.header-app {
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.header-app p {
+    color: #94A3B8;
+    font-size: 14px;
+}
+
+/* Formulário e Inputs */
 form {
     display: flex;
     flex-direction: column;
     gap: 16px;
 }
 
-/* Campos de entrada (inputs) */
 .login, 
 .senhaLogin {
     width: 100%;
@@ -43,12 +62,22 @@ form {
     border: 1px solid #334155;
     border-radius: 8px;
     color: #F1F5F9;
-    font-size: 15px;
+    font-size: 14px;
     outline: none;
     transition: all 0.2s ease;
 }
 
-/* Efeito ao clicar para digitar */
+.login:-webkit-autofill,
+.login:-webkit-autofill:hover, 
+.login:-webkit-autofill:focus,
+.senhaLogin:-webkit-autofill,
+.senhaLogin:-webkit-autofill:hover,
+.senhaLogin:-webkit-autofill:focus {
+    -webkit-text-fill-color: #F1F5F9 !important;
+    -webkit-box-shadow: 0 0 0px 1000px #0F172A inset !important;
+    transition: background-color 5000s ease-in-out 0s;
+}
+
 .login:focus, 
 .senhaLogin:focus {
     border-color: #3B82F6;
@@ -57,69 +86,42 @@ form {
 
 .login::placeholder, 
 .senhaLogin::placeholder {
-    color: #94A3B8;
+    color: #64748b;
 }
 
-/* Botão Principal: Entrar */
+/* Botões */
 button[type="submit"] {
     width: 100%;
     padding: 14px;
-    margin-top: 8px;
-    background-color: #3B82F6; /* Azul principal */
+    margin-top: 6px;
+    background-color: #3B82F6;
     color: #FFFFFF;
     border: none;
     border-radius: 8px;
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 600;
     cursor: pointer;
-    transition: background-color 0.2s ease, transform 0.1s ease;
+    transition: all 0.2s ease;
 }
 
 button[type="submit"]:hover {
     background-color: #2563EB;
 }
 
-button[type="submit"]:active {
-    transform: scale(0.98);
-}
-
-/* Botão Secundário: Crie sua conta */
 #FazerCadastro {
     width: 100%;
     padding: 12px;
-    background-color: transparent;
-    color: #94A3B8;
+    background: transparent;
+    color: #F1F5F9;
     border: 1px solid #334155;
     border-radius: 8px;
     font-size: 14px;
-    font-weight: 500;
+    font-weight: 600;
     cursor: pointer;
     transition: all 0.2s ease;
 }
 
 #FazerCadastro:hover {
-    color: #F1F5F9;
+    background-color: rgba(255, 255, 255, 0.05);
     border-color: #3B82F6;
-    background-color: rgba(59, 130, 246, 0)}
-
-    .header-app {
-    text-align: center;
-    margin-bottom: 24px;
-}
-
-.header-app h1 {
-    color: #F1F5F9;
-    font-size: 24px;
-    font-weight: 700;
-    letter-spacing: -0.5px;
-    margin-bottom: 6px;
-}
-
-.header-app h1 span {
-    color: #3B82F6;
-}
-
-.header-app p {
-    color: #94A3B8;
-    font-size: 14px;
 }

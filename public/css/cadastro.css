@@ -1,4 +1,6 @@
-        /* Reset básico e fontes */
+/* =========================================================
+   1. RESET E ESTRUTURA BASE
+========================================================= */
 * {
     margin: 0;
     padding: 0;
@@ -7,7 +9,7 @@
 }
 
 body {
-    background-color: #0F172A; /* Azul marinho profundo de fundo */
+    background-color: #0F172A;
     color: #F1F5F9;
     min-height: 100vh;
     display: flex;
@@ -16,18 +18,44 @@ body {
     padding: 20px;
 }
 
-/* Container central */
+/* =========================================================
+   2. CARD PRINCIPAL (.conteiner)
+========================================================= */
 .conteiner {
-    background-color: #1E293B; /* Azul petróleo para o cartão */
+    background-color: #1E293B;
     width: 100%;
-    max-width: 400px; /* Largura ideal para telas mobile */
-    padding: 32px 24px;
-    border-radius: 12px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    max-width: 380px;
+    padding: 36px 28px;
+    border-radius: 16px;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
     border: 1px solid #334155;
 }
 
-/* Formulário e inputs */
+/* =========================================================
+   3. LOGO (#logo)
+========================================================= */
+#logo {
+    display: block;
+    width: 100%;
+    max-width: 160px;
+    height: auto;
+    margin: 0 auto 12px auto;
+    object-fit: contain;
+}
+
+.header-app {
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.header-app p {
+    color: #94A3B8;
+    font-size: 14px;
+}
+
+/* =========================================================
+   4. FORMULÁRIO E INPUTS
+========================================================= */
 #formCadastro {
     display: flex;
     flex-direction: column;
@@ -41,38 +69,46 @@ body {
     border: 1px solid #334155;
     border-radius: 8px;
     color: #F1F5F9;
-    font-size: 15px;
+    font-size: 14px;
     outline: none;
     transition: all 0.2s ease;
 }
 
-/* Efeito ao clicar no campo para digitar */
+/* Remove o fundo amarelo do autopreenchimento do navegador */
+#formCadastro input:-webkit-autofill,
+#formCadastro input:-webkit-autofill:hover, 
+#formCadastro input:-webkit-autofill:focus {
+    -webkit-text-fill-color: #F1F5F9 !important;
+    -webkit-box-shadow: 0 0 0px 1000px #0F172A inset !important;
+    transition: background-color 5000s ease-in-out 0s;
+}
+
 #formCadastro input:focus {
-    border-color: #3B82F6; /* Azul aço de destaque */
+    border-color: #3B82F6;
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
 }
 
-/* Placeholder (texto de dica dos inputs) */
 #formCadastro input::placeholder {
-    color: #94A3B8;
+    color: #64748b;
 }
 
-/* Botão de Enviar */
+/* =========================================================
+   5. BOTÕES E LINKS
+========================================================= */
 #formCadastro button {
     width: 100%;
     padding: 14px;
-    margin-top: 8px;
-    background-color: #3B82F6; /* Azul principal */
+    margin-top: 6px;
+    background-color: #3B82F6;
     color: #FFFFFF;
     border: none;
     border-radius: 8px;
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 600;
     cursor: pointer;
-    transition: background-color 0.2s ease, transform 0.1s ease;
+    transition: all 0.2s ease;
 }
 
-/* Efeito ao passar o mouse ou tocar no botão */
 #formCadastro button:hover {
     background-color: #2563EB;
 }
@@ -81,24 +117,22 @@ body {
     transform: scale(0.98);
 }
 
-.header-app {
+.btn-voltar-login {
+    display: block;
     text-align: center;
-    margin-bottom: 24px;
-}
-
-.header-app h1 {
+    width: 100%;
+    padding: 12px;
+    background: transparent;
     color: #F1F5F9;
-    font-size: 24px;
-    font-weight: 700;
-    letter-spacing: -0.5px;
-    margin-bottom: 6px;
-}
-
-.header-app h1 span {
-    color: #3B82F6;
-}
-
-.header-app p {
-    color: #94A3B8;
+    border: 1px solid #334155;
+    border-radius: 8px;
     font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.btn-voltar-login:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+    border-color: #3B82F6;
 }

@@ -1,0 +1,371 @@
+.perfil-container {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin: 0 auto;
+    max-width: var(--largura-conteudo);
+    padding: 24px 16px;
+    width: 100%;
+}
+
+/* =========================
+   CARD PRINCIPAL DO PERFIL
+   ========================= */
+
+.perfil-card {
+    align-items: center;
+    background: var(--cor-card);
+    border: 1px solid var(--cor-borda);
+    border-radius: var(--raio-card);
+    box-shadow: var(--sombras-card);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    padding: 24px;
+}
+
+/* As estatísticas sempre ocupam a linha inteira do card,
+   empurrando avatar + identidade para a linha seguinte.
+   Isso evita que a identidade seja espremida a ponto de
+   desaparecer em telas estreitas. */
+.perfil-card .perfil-estatisticas {
+    flex: 1 1 100%;
+    order: -1;
+}
+
+.perfil-avatar {
+    background: var(--cor-fundo);
+    border: 2px solid var(--cor-primaria);
+    border-radius: 50%;
+    flex: 0 0 72px;
+    height: 72px;
+    overflow: hidden;
+    width: 72px;
+}
+
+.perfil-avatar img {
+    height: 100%;
+    object-fit: cover;
+    width: 100%;
+}
+
+/* =========================
+   INFORMAÇÕES DO USUÁRIO
+   ========================= */
+
+.perfil-identidade {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+}
+
+.perfil-kicker {
+    color: var(--cor-primaria);
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.perfil-identidade h2 {
+    font-size: 22px;
+    margin: 2px 0 4px;
+    max-width: 100%;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}
+
+.perfil-email {
+    color: var(--cor-texto-secundario);
+    font-size: 13px;
+    margin-bottom: 8px;
+    max-width: 100%;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}
+
+.perfil-descricao {
+    color: var(--cor-texto-secundario);
+    font-size: 13px;
+    line-height: 1.5;
+    max-width: 100%;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}
+
+/* =========================
+   AÇÕES DO PERFIL
+   ========================= */
+
+.perfil-acoes {
+    background: var(--cor-card);
+    border: 1px solid var(--cor-borda);
+    border-radius: var(--raio-card);
+    box-shadow: var(--sombras-card);
+}
+
+.perfil-link {
+    align-items: center;
+    display: flex;
+    gap: 12px;
+    padding: 18px;
+    text-decoration: none;
+}
+
+.perfil-link-icone {
+    align-items: center;
+    background: rgba(59, 130, 246, 0.14);
+    border-radius: var(--raio-input);
+    color: var(--cor-primaria);
+    display: flex;
+    flex: 0 0 42px;
+    font-size: 22px;
+    height: 42px;
+    justify-content: center;
+    width: 42px;
+}
+
+.perfil-link strong,
+.perfil-link small {
+    display: block;
+}
+
+.perfil-link strong {
+    color: var(--cor-texto);
+}
+
+.perfil-link small {
+    color: var(--cor-texto-secundario);
+    font-size: 12px;
+    margin-top: 2px;
+}
+
+.perfil-link-seta {
+    color: var(--cor-texto-secundario);
+    font-size: 25px;
+    margin-left: auto;
+}
+
+/* =========================
+   ESTATÍSTICAS
+   ========================= */
+
+.perfil-estatisticas {
+    display: grid;
+    gap: 10px;
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.estatistica {
+    background: var(--cor-card);
+    border: 1px solid var(--cor-borda);
+    border-radius: var(--raio-card);
+    box-shadow: var(--sombras-card);
+    padding: 16px 10px;
+    text-align: center;
+}
+
+.estatistica strong {
+    color: var(--cor-primaria);
+    display: block;
+    font-size: 22px;
+    line-height: 1;
+    margin-bottom: 6px;
+}
+
+.estatistica span {
+    color: var(--cor-texto-secundario);
+    font-size: 12px;
+}
+
+/* =========================
+   SEÇÃO DE PUBLICAÇÕES
+   ========================= */
+
+.perfil-posts {
+    background: var(--cor-card);
+    border: 1px solid var(--cor-borda);
+    border-radius: var(--raio-card);
+    box-shadow: var(--sombras-card);
+    padding: 20px;
+}
+
+.perfil-secao-titulo h3 {
+    margin-bottom: 4px;
+}
+
+.perfil-secao-titulo p {
+    color: var(--cor-texto-secundario);
+    font-size: 13px;
+    margin-bottom: 16px;
+}
+
+/* =========================
+   LISTA DE POSTS
+   ========================= */
+
+.lista-meus-posts {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+/* =========================
+   CARD DO POST
+   ========================= */
+
+.meu-post {
+    background: var(--cor-card);
+    border: 1px solid var(--cor-borda);
+    border-radius: var(--raio-card);
+    box-shadow: var(--sombras-card);
+    padding: 18px;
+}
+
+.meu-post-header {
+    margin-bottom: 10px;
+}
+
+.meu-post-header h3 {
+    font-size: 17px;
+    margin-bottom: 8px;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}
+
+.meu-post-info {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.meu-post-info span {
+    background: rgba(59, 130, 246, 0.12);
+    border-radius: 999px;
+    color: var(--cor-primaria);
+    font-size: 12px;
+    padding: 5px 9px;
+}
+
+.meu-post-descricao {
+    color: var(--cor-texto-secundario);
+    font-size: 14px;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}
+
+/* =========================
+   BOTÕES DOS POSTS
+   ========================= */
+
+.meu-post-acoes {
+    display: flex;
+    gap: 8px;
+    margin-top: 16px;
+}
+
+.meu-post-acoes button {
+    border: none;
+    border-radius: var(--raio-input);
+    cursor: pointer;
+    font-size: 13px;
+    padding: 9px 14px;
+}
+
+.btn-editar {
+    background: var(--cor-primaria);
+    color: white;
+}
+
+.btn-excluir {
+    background: rgba(239, 68, 68, 0.12);
+    color: #ef4444;
+}
+
+/* =========================
+   RESPONSIVIDADE
+   ========================= */
+
+@media (max-width: 480px) {
+
+    .perfil-container {
+        padding: 20px 16px;
+    }
+
+    /* Card do perfil */
+
+    .perfil-card {
+        align-items: flex-start;
+        gap: 14px;
+        padding: 20px;
+    }
+
+    .perfil-avatar {
+        flex: 0 0 64px;
+        height: 64px;
+        width: 64px;
+    }
+
+    .perfil-identidade {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .perfil-identidade h2 {
+        font-size: 20px;
+    }
+
+    .perfil-email,
+    .perfil-descricao {
+        font-size: 13px;
+        overflow-wrap: anywhere;
+        word-break: break-word;
+    }
+
+    /* Estatísticas */
+
+    .perfil-estatisticas {
+        gap: 8px;
+    }
+
+    .estatistica {
+        padding: 14px 6px;
+    }
+
+    .estatistica strong {
+        font-size: 20px;
+    }
+
+    .estatistica span {
+        font-size: 11px;
+    }
+
+    /* Publicações */
+
+    .perfil-posts {
+        padding: 16px;
+    }
+
+    .meu-post {
+        padding: 16px;
+    }
+
+    .meu-post-header h3 {
+        font-size: 16px;
+    }
+
+    /* Botões */
+
+    .meu-post-acoes button {
+        padding: 9px 13px;
+    }
+}
+.post-imagem {
+    width: 100%;
+    max-height: 400px;
+    object-fit: cover;
+    border-radius: 12px;
+    margin-top: 15px;
+    display: block;
+}

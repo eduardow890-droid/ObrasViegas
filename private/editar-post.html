@@ -1,22 +1,46 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+    <link rel="icon" type="image/png" href="/favicon.png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Obras Viegas - Editar Publicação</title>
-    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/global.css">
     <link rel="stylesheet" href="/css/editar-post.css">
     <script src="/js/editar-post.js" defer></script>
+    <script src="/js/animations.js" defer></script>
 </head>
-<body>
+<body class="pagina-pronta">
+ <header class="app-header">
+    <div class="logo">
+        <h1>Obras <span>Viegas</span></h1>
+    </div>   
 
-    <header class="app-header">
-        <div class="logo">
-            <h1>Obras <span>Viegas</span></h1>
+     <div class="header-usuario">
+
+        <span id="usuario" class="nome-usuario"></span>
+
+        <div class="perfil-icone">
+            <img
+                id="fotoPerfil"
+                src="/img/avatar-padrao.jpg"
+                alt="Foto de perfil"
+            >
         </div>
-    </header>
 
-    <main class="editar-container">
+        <button
+            id="btnLogout"
+            class="btn-logout"
+            type="button"
+        >
+            Sair
+        </button>
+
+    </div>
+</header>
+
+    <!-- Conteúdo Principal -->
+    <main class="editar-container animacao-entrada">
         <section class="editar-card">
             
             <header class="card-header">
@@ -42,14 +66,13 @@
                 <div class="form-group">
                     <label for="selectTipo">Tipo da publicação</label>
                     <select id="selectTipo" name="tipo" required>
-                        <option value="servico">servico — Oferece serviço</option>
-                        <option value="pedido">pedido — Procuro ajuda</option>
+                        <option value="servico">Oferecer serviço</option>
+                        <option value="pedido">Pedir ajuda / Obra</option>
                     </select>
                 </div>
 
                 <div class="form-group">
                     <label for="selectBairro">Bairro</label>
-
                     <select id="selectBairro" name="bairro" required>
                         <option value="">Selecione o bairro</option>
                         <option value="Bangu">Bangu</option>
@@ -66,7 +89,7 @@
                         id="inputOutroBairro"
                         name="outroBairro"
                         placeholder="Digite o nome do bairro"
-                        style="display: none;"
+                        class="campo-outro-bairro"
                     >
                 </div>
 
@@ -101,11 +124,32 @@
         </section>
     </main>
 
+    <!-- Bottom Nav Padronizada com SVGs -->
     <nav class="bottom-nav">
-        <a href="/main" class="nav-item">Home</a>
-        <a href="/buscar" class="nav-item">Buscar</a>
-        <a href="/postar" class="nav-item btn-destaque">+</a>
-        <a href="/perfil" class="nav-item">Perfil</a>
+        <a href="/main" class="nav-item">
+            <svg class="nav-icone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+            </svg>
+            <span>Início</span>
+        </a>
+
+        <a href="/buscar" class="nav-item">
+            <svg class="nav-icone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <span>Buscar</span>
+        </a>
+
+        <a href="/postar" class="nav-item btn-destaque" aria-label="Criar publicação">+</a>
+
+        <a href="/perfil" class="nav-item">
+            <svg class="nav-icone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+            <span>Perfil</span>
+        </a>
     </nav>
 
 </body>
