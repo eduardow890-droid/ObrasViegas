@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Obras viegas</title>
     <link rel="stylesheet" href="/css/index.css">
+     <link rel="stylesheet" href="/css/aviso.css">
 </head>
 <body>
    <div class="conteiner">
@@ -23,6 +24,27 @@
         <button type="button" id="FazerCadastro">Crie sua conta</button>
     </form>
 </div>
+<!-- Modal de Aviso de Testes -->
+<div id="modalAviso" class="modal-overlay">
+  <div class="modal-card">
+    <div class="modal-header">
+      <span class="modal-icone">⚠️</span>
+      <h2>Ambiente de Testes</h2>
+    </div>
+    <div class="modal-body">
+      <p>Seja bem-vindo(a)! Esta aplicação está operando em um servidor de demonstração.</p>
+      <ul>
+        <li><strong>Posts e Mensagens:</strong> Podem ser resetados durante atualizações da plataforma.</li>
+        <li><strong>Imagens enviadas:</strong> São temporárias e serão apagadas após a inatividade do servidor.</li>
+      </ul>
+      <p class="nota-atencao">Não utilize este ambiente para armazenar arquivos ou dados importantes.</p>
+    </div>
+    <div class="modal-footer">
+      <button id="btnFecharAviso" type="button" class="btn-entendi">Compreendo e Quero Continuar</button>
+    </div>
+  </div>
+</div>
     <script src="/js/login.js"></script>
+    <script src="/js/aviso.js"></script>
 </body>
 </html>

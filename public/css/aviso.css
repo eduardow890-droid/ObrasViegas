@@ -1,0 +1,155 @@
+/* =========================================================
+   MODAL DE AVISO (INTEGRADO AO DESIGN SYSTEM DARK)
+   ========================================================= */
+
+/* Fundo escurecido com desfoque de alta qualidade */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(15, 23, 42, 0.85); /* Tom do fundo principal (#0F172A) */
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 99999;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+/* Card do Modal alinhado com o .conteiner */
+.modal-card {
+    background-color: #1E293B;
+    width: 100%;
+    max-width: 420px;
+    border-radius: 16px;
+    border: 1px solid #334155;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+    overflow: hidden;
+    animation: surgirModal 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes surgirModal {
+    from {
+        opacity: 0;
+        transform: scale(0.96) translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+/* Cabeçalho de Alerta */
+.modal-header {
+    background-color: rgba(245, 158, 11, 0.1); /* Destaque sutil em Âmbar */
+    border-bottom: 1px solid rgba(245, 158, 11, 0.2);
+    padding: 18px 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.modal-header h2 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #FBBF24;
+}
+
+.modal-icone {
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+}
+
+/* Conteúdo Principal */
+.modal-body {
+    padding: 24px;
+    color: #CBD5E1;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.modal-body p {
+    margin: 0 0 14px 0;
+}
+
+.modal-body ul {
+    background-color: #0F172A;
+    border: 1px solid #334155;
+    padding: 14px 16px 14px 36px;
+    border-radius: 8px;
+    margin: 0 0 16px 0;
+}
+
+.modal-body li {
+    margin-bottom: 8px;
+    color: #94A3B8;
+}
+
+.modal-body li:last-child {
+    margin-bottom: 0;
+}
+
+.modal-body li strong {
+    color: #F1F5F9;
+}
+
+.nota-atencao {
+    font-size: 13px;
+    color: #64748B;
+    font-style: italic;
+    margin-bottom: 0 !important;
+}
+
+/* Rodapé e Botão de Ação */
+.modal-footer {
+    padding: 16px 24px 24px 24px;
+    background-color: #1E293B;
+}
+
+.btn-entendi {
+    width: 100%;
+    padding: 14px;
+    background-color: #3B82F6;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
+}
+
+.btn-entendi:hover {
+    background-color: #2563EB;
+    transform: translateY(-1px);
+}
+
+.btn-entendi:active {
+    transform: translateY(0);
+}
+
+/* Ajuste Fino para Telas Pequenas de Celular */
+@media (max-width: 480px) {
+    .modal-card {
+        max-width: 100%;
+    }
+    
+    .modal-header {
+        padding: 16px 20px;
+    }
+    
+    .modal-body {
+        padding: 20px;
+    }
+    
+    .modal-footer {
+        padding: 12px 20px 20px 20px;
+    }
+}
