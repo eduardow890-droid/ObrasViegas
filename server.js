@@ -17,7 +17,7 @@ const db = require("./database/database");
 // =============================================================================
 
 const app = express();
-const porta = 3000;
+const porta = process.env.PORT || 3000;
 
 const storage = multer.diskStorage({
     destination: path.join(__dirname, "uploads", "perfil"),
