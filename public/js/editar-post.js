@@ -53,7 +53,6 @@ async function carregarUsuario() {
 }
 
 
-console.log("ID DO POST:", postId);
 async function carregarPost() {
 
     if (!postId) {
@@ -67,8 +66,6 @@ async function carregarPost() {
         const resposta = await fetch(`/posts/${postId}`);
 
         const dados = await resposta.json();
-
-        console.log("Post recebido:", dados);
 
         if (!resposta.ok) {
 
@@ -144,8 +141,6 @@ selectBairro.addEventListener("change", () => {
 formEditarPost.addEventListener('submit',async (event) =>{
     event.preventDefault();
 
-    console.log("submit executada");
-
     const confirmar = confirm("Você deseja salvar essas alterações?")
     
     if(!confirmar){
@@ -183,8 +178,6 @@ formEditarPost.addEventListener('submit',async (event) =>{
     });
 
     const dados = await resposta.json();
-
-    console.log("Resposta da atualização:", dados);
 
     if (!resposta.ok) {
 

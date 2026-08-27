@@ -351,6 +351,15 @@ try {
         });
     } catch (erro) {
         console.error("Erro ao publicar post:", erro);
+
+        if (req.file) {
+            try {
+                fs.unlinkSync(req.file.path);
+            } catch (erroRemocao) {
+                console.error("Erro ao remover arquivo órfão:", erroRemocao);
+            }
+        }
+
         return res.status(500).json({
             sucesso: false,
             mensagem: "Erro ao publicar o post"

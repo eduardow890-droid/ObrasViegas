@@ -57,7 +57,7 @@ avatar.classList.add("post-avatar");
 if (post.foto) {
     avatar.src = post.foto;
 } else {
-    avatar.src = "/avatar-padrao.jpg";
+    avatar.src = "/img/avatar-padrao.jpg";
 }
 
 avatar.alt = `Foto de ${post.nome}`;

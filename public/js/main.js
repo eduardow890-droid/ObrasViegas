@@ -92,8 +92,6 @@ async function carregarPosts(usuario) {
         return;
     }
 
-    console.log("Posts recebidos:", data);
-
     if (data.posts.length === 0) {
 
     listaPosts.textContent =
@@ -103,13 +101,7 @@ async function carregarPosts(usuario) {
 }
     
     data.posts.forEach(post => {
-        console.log("Post:", post)
         
-        if(post.usuario_id === usuario.id){
-            console.log("MEU POST:", post);
-        }else{
-            console.log("Post de outro usuario", post)
-        }
         const artigo = document.createElement("article");
 
         artigo.classList.add("post-card");
@@ -226,8 +218,6 @@ async function carregarPosts(usuario) {
         });
 
         const dados = await resposta.json();
-
-        console.log(dados);
 
         if (!resposta.ok || !dados.sucesso) {
 

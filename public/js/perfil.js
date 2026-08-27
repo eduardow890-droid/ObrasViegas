@@ -17,9 +17,6 @@ async function carregarPerfil(){
         return
         };
 
-        console.log("Nome:", dados.usuario.nome);
-        console.log("Email:", dados.usuario.email);
-
         nomeUsuario.textContent = dados.usuario.nome;
         emailUsuario.textContent =  dados.usuario.email;
 
@@ -42,9 +39,6 @@ async function carregarMeusPosts() {
     const resposta = await fetch("/carregarPosts");
 
     const texto = await resposta.text();
-
-console.log("Status:", resposta.status);
-console.log("Resposta do servidor:", texto);
 
 const dados = JSON.parse(texto);
 
