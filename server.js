@@ -74,7 +74,14 @@ const uploadPost = multer({
     fileFilter: filtroImagem
 });
 
-app.use(helmet());
+app.use(helmet({
+    contentSecurityPolicy: {
+        directives: {
+            ...helmet.contentSecurityPolicy.getDefaultDirectives(),
+            "img-src": ["'self'", "data:", "blob:", "https://umbqphkbvwjbxschtfnl.supabase.co"]
+        }
+    }
+}));
 
 app.use(session({
     store: new PgSession({
