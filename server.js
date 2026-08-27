@@ -84,7 +84,7 @@ app.use(session({
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
-
+app.set('trust proxy', 1); 
 function verificarLogin(req, res, next) {
     if (!req.session.usuarioId) {
         return res.redirect("/index.html");
