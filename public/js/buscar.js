@@ -176,9 +176,6 @@ formBuscar.addEventListener("submit", async (event) => {
 
     const dados = await resposta.json();
 
-
-    console.log("Resultado:", dados);
-
    if (resposta.status === 401) {
     alert("Sua sessão expirou. Faça login novamente.");
     window.location.href = "/index.html";

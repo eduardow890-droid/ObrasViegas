@@ -20,8 +20,6 @@ form.addEventListener('submit', async (event) => {
 
         const data = await resposta.json();
 
-        console.log(data);
-
         if (data.sucesso) {
 
             alert(data.mensagem);

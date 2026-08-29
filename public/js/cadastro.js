@@ -39,7 +39,6 @@ form.addEventListener("submit", async (event) => {
 
         const data = await resposta.json();
 
-        console.log(data);
 
         if (!resposta.ok || !data.sucesso) {
             alert(data.mensagem || "Não foi possível concluir o cadastro.");

@@ -153,8 +153,6 @@ try {
 
     const data = await resposta.json();
 
-    console.log("Resposta do servidor:", data);
-
 
     // =====================================================================
     // Erros
