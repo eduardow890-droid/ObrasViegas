@@ -35,21 +35,22 @@ form.addEventListener('submit', async (event) => {
 
         if (data.sucesso) {
 
-            alert(data.mensagem);
+            mostrarToast(data.mensagem, "sucesso");
 
             window.location.href = "/main";
 
             return;
         }
 
-        alert(data.mensagem || "Não foi possível realizar o login.");
+mostrarToast(data.mensagem || "Não foi possível realizar o login.", "erro");
 
     } catch (erro) {
 
         console.error("Erro ao realizar login:", erro);
 
-        alert("Não foi possível conectar ao servidor. Tente novamente.");
-    } finally {
+mostrarToast("Não foi possível conectar ao servidor. Tente novamente.", "erro");
+
+} finally {
         setloading(btn, "Entrar", false);
     }
 });

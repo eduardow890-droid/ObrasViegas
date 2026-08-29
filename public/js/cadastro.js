@@ -24,16 +24,16 @@ form.addEventListener("submit", async (event) => {
         usuario.email.trim() === "" ||
         usuario.senha.trim() === ""
     ) {
-        alert("Preencha os campos para finalizar o cadastro");
-        return;
+    mostrarToast("Preencha os campos para finalizar o cadastro", "aviso");        
+    return;
     }
 
     // Mesma regra de complexidade validada no server.js — feedback imediato
     const senhaValida = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/;
 
     if (!senhaValida.test(usuario.senha)) {
-        alert("A senha deve ter pelo menos 8 caracteres, uma letra, um número e um caractere especial (@$!%*?&).");
-        return;
+    mostrarToast("A senha deve ter pelo menos 8 caracteres, uma letra, um número e um caractere especial.", "aviso");        
+    return;
     }
 
     try {
@@ -52,18 +52,18 @@ form.addEventListener("submit", async (event) => {
 
 
         if (!resposta.ok || !data.sucesso) {
-            alert(data.mensagem || "Não foi possível concluir o cadastro.");
+            mostrarToast(data.mensagem || "Não foi possível concluir o cadastro.", "erro");            
             return;
         }
 
-        alert(data.mensagem || "Cadastro realizado com sucesso!");
+        mostrarToast(data.mensagem || "Cadastro realizado com sucesso!", "sucesso");
         window.location.href = "/index.html";
 
     } catch (erro) {
 
         console.error("Erro ao cadastrar:", erro);
 
-        alert("Erro ao conectar com o servidor.");
+        mostrarToast("Erro ao conectar com o servidor.", "erro");
     } finally {
         setloading(btn, "Finalizar Cadastro", false);
     }

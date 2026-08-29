@@ -27,7 +27,7 @@ async function carregarUsuario() {
 
     console.error("Erro ao carregar usuário:", erro);
 
-    alert("Não foi possivel conectar ao servidor.");
+    mostrarToast("Não foi possivel conectar ao servidor.", "erro");
 
     return null;
 }
@@ -35,7 +35,7 @@ async function carregarUsuario() {
 
 document.getElementById("logout").addEventListener("click", async () => {
 
-    const confirmar = confirm("Deseja realmente sair?");
+   const confirmar = await confirmarAcao("Deseja realmente sair?", "Sair");
 
     if (!confirmar) {
         return;
@@ -53,9 +53,9 @@ document.getElementById("logout").addEventListener("click", async () => {
 
             console.error("Erro ao realizar logout:", data);
 
-            alert(
+            mostrarToast(
                 data.mensagem ||
-                "Não foi possível sair da conta."
+                "Não foi possível sair da conta.", "erro"
             );
 
             return;
@@ -69,7 +69,7 @@ document.getElementById("logout").addEventListener("click", async () => {
 
         console.error("Erro de conexão ao realizar logout:", erro);
 
-        alert("Não foi possível conectar ao servidor.");
+        mostrarToast("Não foi possível conectar ao servidor.", "erro");
     }
 });
 
@@ -205,7 +205,7 @@ async function carregarPosts(usuario) {
             footer.appendChild(btnExcluir);
 
             btnExcluir.addEventListener('click', async () => {
-    const confirmar = confirm("Você deseja excluir essa publicação");
+   const confirmar = await confirmarAcao("Você deseja excluir essa publicação?", "Excluir");
 
     if (!confirmar) {
         return;
@@ -222,12 +222,12 @@ async function carregarPosts(usuario) {
         if (!resposta.ok || !dados.sucesso) {
 
             if (resposta.status === 401) {
-                alert("Sua sessão expirou. Faça login novamente.");
+                mostrarToast("Sua sessão expirou. Faça login novamente.", "info");
                 window.location.href = "/index.html";
                 return;
             }
 
-            alert(dados.mensagem || "Não foi possível excluir a publicação.");
+            mostrarToast(dados.mensagem || "Não foi possível excluir a publicação.", "erro");
             return;
         }
 
@@ -237,7 +237,7 @@ async function carregarPosts(usuario) {
 
         console.error("Erro ao excluir publicação:", erro);
 
-        alert("Erro ao conectar com o servidor.");
+        mostrarToast("Erro ao conectar com o servidor.", "erro");
     }
 });
 

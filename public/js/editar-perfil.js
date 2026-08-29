@@ -21,7 +21,7 @@ async function carregarEdicao() {
 
         if (!resposta.ok || !dados.autenticado) {
 
-            alert("Sua sessão expirou. Faça login novamente.");
+            mostrarToast("Sua sessão expirou. Faça login novamente.", "aviso");
 
             window.location.href = "/index.html";
 
@@ -39,7 +39,7 @@ async function carregarEdicao() {
 
         console.error("Erro ao carregar perfil:", erro);
 
-        alert("Não foi possível carregar seus dados. Tente novamente.");
+        mostrarToast("Não foi possível carregar seus dados. Tente novamente.", "erro");
 
     }
 
@@ -53,8 +53,7 @@ formEditarPerfil.addEventListener("submit", async (event) => {
         const btn = event.submitter || formEditarPerfil.querySelector("button[type='submit']");
 
 
-    const confirma = confirm("Você deseja salvar essas alterações?");
-
+   const confirma = await confirmarAcao("Você deseja salvar essas alterações?", "Salvar", "neutro");
     if (!confirma) {
         return;
     }
@@ -66,7 +65,7 @@ formEditarPerfil.addEventListener("submit", async (event) => {
 
     if (!nome || !email) {
 
-        alert("Preencha todos os campos.");
+        mostrarToast("Preencha todos os campos.", "aviso");
 
         return;
     }
@@ -105,13 +104,13 @@ formEditarPerfil.addEventListener("submit", async (event) => {
 
         if (!resposta.ok) {
 
-            alert(dados.mensagem || "Erro ao atualizar perfil.");
+            mostrarToast(dados.mensagem || "Erro ao atualizar perfil.", "erro");
 
             return;
         }
 
 
-        alert("Perfil atualizado com sucesso!");
+        mostrarToast("Perfil atualizado com sucesso!", "sucesso");
 
         window.location.href = "/perfil";
 
@@ -120,7 +119,7 @@ formEditarPerfil.addEventListener("submit", async (event) => {
 
         console.error("Erro:", erro);
 
-        alert("Erro ao conectar com o servidor.");
+        mostrarToast("Erro ao conectar com o servidor.", "erro");
 
     } finally {
         setloading(btn, "Salvar alterações", false)

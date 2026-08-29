@@ -49,7 +49,7 @@ try {
 
     console.error("Erro ao carregar usuário:", erro);
 
-    alert("Não foi possível conectar ao servidor.");
+    mostrarToast("Não foi possível conectar ao servidor.", "erro");
 
     return null;
 }
@@ -69,10 +69,7 @@ event.preventDefault();
         const btn = event.submitter || formPost.querySelector("button[type='submit']");
 
 
-const confirmacao = confirm(
-    "Você deseja publicar esse post?"
-);
-
+const confirmacao = await confirmarAcao("Você deseja publicar esse post?", "Publicar", "neutro");
 if (!confirmacao) {
     return;
 }
@@ -99,7 +96,7 @@ const tipoSelecionado = document.querySelector(
 
 if (!tipoSelecionado) {
 
-    alert("Selecione o tipo da publicação.");
+    mostrarToast("Selecione o tipo da publicação.", "aviso");
 
     return;
 }
@@ -174,8 +171,8 @@ try {
 
         if (resposta.status === 401) {
 
-            alert(
-                "Sua sessão expirou. Faça login novamente."
+            mostrarToast(
+                "Sua sessão expirou. Faça login novamente.", "info"
             );
 
             window.location.href = "/index.html";
@@ -183,9 +180,9 @@ try {
             return;
         }
 
-        alert(
+        mostrarToast(
             data.mensagem ||
-            "Não foi possível publicar o post."
+            "Não foi possível publicar o post.", "erro"
         );
 
         return;
@@ -198,9 +195,9 @@ try {
 
     if (data.sucesso) {
 
-        alert(
+        mostrarToast(
             data.mensagem ||
-            "Post publicado com sucesso."
+            "Post publicado com sucesso.", "sucesso"
         );
 
         window.location.href = "/main";
@@ -215,11 +212,11 @@ try {
         erro
     );
 
-    alert(
-        "Erro ao conectar com o servidor. Tente novamente."
+    mostrarToast(
+        "Erro ao conectar com o servidor. Tente novamente.", "erro"
     );
 } finally {
-    setloading(btn, "Publicar no feed", false)
+    setloading(btn, "Publicar no Feed", false)
 }
 
 
@@ -261,9 +258,7 @@ if (btnLogout) {
 
 btnLogout.addEventListener("click", async () => {
 
-    const confirmacao = confirm(
-        "Deseja realmente sair?"
-    );
+ const confirmacao = await confirmarAcao("Deseja realmente sair?", "Sair");
 
     if (!confirmacao) {
         return;
@@ -285,9 +280,9 @@ btnLogout.addEventListener("click", async () => {
             return;
         }
 
-        alert(
+        mostrarToast(
             data.mensagem ||
-            "Não foi possível sair."
+            "Não foi possível sair.", "erro"
         );
 
     } catch (erro) {
@@ -297,8 +292,8 @@ btnLogout.addEventListener("click", async () => {
             erro
         );
 
-        alert(
-            "Erro ao conectar com o servidor."
+        mostrarToast(
+            "Erro ao conectar com o servidor.", "erro"
         );
     }
 

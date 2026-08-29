@@ -139,9 +139,7 @@ if (post.foto) {
 
     botaoExcluir.addEventListener("click", async () => {
 
-    const confirmar = confirm(
-        "Você deseja excluir esta publicação?"
-    );
+   const confirmar = await confirmarAcao("Você deseja excluir esta publicação?", "Excluir");
 
     if (!confirmar) {
         return;
@@ -158,12 +156,12 @@ if (post.foto) {
         if (!resposta.ok || !dados.sucesso) {
 
             if (resposta.status === 401) {
-                alert("Sua sessão expirou. Faça login novamente.");
+                mostrarToast("Sua sessão expirou. Faça login novamente.", "info");
                 window.location.href = "/index.html";
                 return;
             }
 
-            alert(dados.mensagem || "Não foi possível excluir a publicação.");
+            mostrarToast(dados.mensagem || "Não foi possível excluir a publicação.", "erro");
             return;
         }
 
@@ -187,7 +185,7 @@ if (post.foto) {
 
         console.error("Erro ao excluir publicação:", erro);
 
-        alert("Erro ao conectar com o servidor.");
+        mostrarToast("Erro ao conectar com o servidor.", "erro");
     }
 });
 
