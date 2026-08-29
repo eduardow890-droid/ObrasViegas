@@ -61,6 +61,8 @@ function extrairNomeArquivoStorage(url) {
 const app = express();
 const porta = process.env.PORT || 3000;
 
+app.set("trust proxy", 1);
+
 // Multer em memória (sem salvar no disco)
 const upload = multer({
     storage: multer.memoryStorage(),
