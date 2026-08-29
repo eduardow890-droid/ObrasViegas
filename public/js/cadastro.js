@@ -2,8 +2,17 @@
 
 const form = document.getElementById("formCadastro");
 
+function setloading(btn, textoOriginal, carregando){
+    btn.disabled = carregando;
+    btn.textContent = carregando ? "Aguarde..." : textoOriginal;
+    btn.style.opacity = carregando ? "0.7" : "1";
+}
+
 form.addEventListener("submit", async (event) => {
     event.preventDefault();
+
+        const btn = event.submitter || form.querySelector("button[type='submit']");
+
 
     const usuario = {
         nome: document.getElementById("nomeUsuario").value,
@@ -29,6 +38,8 @@ form.addEventListener("submit", async (event) => {
 
     try {
 
+        setloading(btn, "Finalizar Cadastro", true);
+
         const resposta = await fetch("/cadastrar", {
             method: "POST",
             headers: {
@@ -53,5 +64,7 @@ form.addEventListener("submit", async (event) => {
         console.error("Erro ao cadastrar:", erro);
 
         alert("Erro ao conectar com o servidor.");
+    } finally {
+        setloading(btn, "Finalizar Cadastro", false);
     }
 });

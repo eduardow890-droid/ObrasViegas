@@ -11,6 +11,11 @@ const inputWhatsapp = document.getElementById("inputWhatsapp");
 const nomeUsuario = document.getElementById("usuario");
 const fotoPerfil = document.getElementById("fotoPerfil");
 
+function setloading(btn, textoOriginal, carregando){
+    btn.disabled = carregando;
+    btn.textContent = carregando ? "Aguarde..." : textoOriginal;
+    btn.style.opacity = carregando ? "0.7" : "1";
+}
 
 async function carregarUsuario() {
 
@@ -141,6 +146,9 @@ selectBairro.addEventListener("change", () => {
 formEditarPost.addEventListener('submit',async (event) =>{
     event.preventDefault();
 
+            const btn = event.submitter || formEditarPost.querySelector("button[type='submit']");
+
+
     const confirmar = confirm("Você deseja salvar essas alterações?")
     
     if(!confirmar){
@@ -168,6 +176,8 @@ formEditarPost.addEventListener('submit',async (event) =>{
 };
 
     try {
+
+        setloading(btn, "Salvar alterações", true);
 
     const resposta = await fetch(`/posts/${postId}`, {
         method: "PUT",
@@ -249,6 +259,8 @@ if (btnLogout) {
             console.error("Erro ao realizar logout:", erro);
 
             alert("Erro ao conectar com o servidor.");
+        } finally{
+            setloading(btn, "Salvar alterações", false)
         }
     });
 }

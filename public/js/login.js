@@ -1,7 +1,16 @@
 const form = document.getElementById("formLogin");
 
+function setloading(btn, textoOriginal, carregando){
+    btn.disabled = carregando;
+    btn.textContent = carregando ? "Aguarde..." : textoOriginal;
+    btn.style.opacity = carregando ? "0.7" : "1";
+}
+
 form.addEventListener('submit', async (event) => {
     event.preventDefault();
+
+    const btn = event.submitter || form.querySelector("button[type='submit']");
+
 
     const usuario = {
         email: document.getElementById("email").value,
@@ -10,12 +19,16 @@ form.addEventListener('submit', async (event) => {
 
     try {
 
+        setloading(btn, "Entrar", true);
+
         const resposta = await fetch("/login", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify(usuario)
+
+            
         });
 
         const data = await resposta.json();
@@ -36,6 +49,8 @@ form.addEventListener('submit', async (event) => {
         console.error("Erro ao realizar login:", erro);
 
         alert("Não foi possível conectar ao servidor. Tente novamente.");
+    } finally {
+        setloading(btn, "Entrar", false);
     }
 });
 

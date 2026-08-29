@@ -4,6 +4,12 @@ const inputOutroBairro = document.getElementById("inputOutroBairro");
 const fotoPerfil = document.getElementById("fotoPerfil");
 const fotoPost = document.getElementById("fotoPost");
 
+function setloading(btn, textoOriginal, carregando){
+    btn.disabled = carregando;
+    btn.textContent = carregando ? "Aguarde..." : textoOriginal;
+    btn.style.opacity = carregando ? "0.7" : "1";
+}
+
 // =============================================================================
 // Carregar usuário
 // =============================================================================
@@ -12,6 +18,7 @@ async function carregarUsuario() {
 
 
 try {
+
 
     const resposta = await fetch("/me");
 
@@ -58,6 +65,9 @@ formPost.addEventListener("submit", async (event) => {
 
 
 event.preventDefault();
+
+        const btn = event.submitter || formPost.querySelector("button[type='submit']");
+
 
 const confirmacao = confirm(
     "Você deseja publicar esse post?"
@@ -146,6 +156,8 @@ if (fotoPost.files.length > 0) {
 
 try {
 
+    setloading(btn, "Publicar no Feed", true)
+
     const resposta = await fetch("/posts", {
         method: "POST",
         body: formulario
@@ -206,6 +218,8 @@ try {
     alert(
         "Erro ao conectar com o servidor. Tente novamente."
     );
+} finally {
+    setloading(btn, "Publicar no feed", false)
 }
 
 

@@ -4,6 +4,12 @@ const inputEmail = document.getElementById("inputEmail");
 const inputFoto = document.getElementById("inputFoto");
 const previewFoto = document.getElementById("previewFoto");
 
+function setloading(btn, textoOriginal, carregando){
+    btn.disabled = carregando;
+    btn.textContent = carregando ? "Aguarde..." : textoOriginal;
+    btn.style.opacity = carregando ? "0.7" : "1";
+}
+
 
 async function carregarEdicao() {
 
@@ -44,6 +50,9 @@ formEditarPerfil.addEventListener("submit", async (event) => {
 
     event.preventDefault();
 
+        const btn = event.submitter || formEditarPerfil.querySelector("button[type='submit']");
+
+
     const confirma = confirm("Você deseja salvar essas alterações?");
 
     if (!confirma) {
@@ -80,6 +89,8 @@ formEditarPerfil.addEventListener("submit", async (event) => {
 
     try {
 
+        setloading(btn, "Salvar alterações", true);
+
         const resposta = await fetch("/perfil", {
 
             method: "PUT",
@@ -111,6 +122,8 @@ formEditarPerfil.addEventListener("submit", async (event) => {
 
         alert("Erro ao conectar com o servidor.");
 
+    } finally {
+        setloading(btn, "Salvar alterações", false)
     }
 
 });
