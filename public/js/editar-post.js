@@ -148,6 +148,14 @@ formEditarPost.addEventListener('submit',async (event) =>{
 
             const btn = event.submitter || formEditarPost.querySelector("button[type='submit']");
 
+            // Validação do WhatsApp
+const whatsappLimpo = document.getElementById("inputWhatsapp").value.replace(/\D/g, "");
+
+if (whatsappLimpo.length < 10 || whatsappLimpo.length > 11) {
+    mostrarToast("Informe um número de WhatsApp válido com DDD. Ex: 21999999999", "aviso");
+    return;
+}
+
 
     const confirmar = await confirmarAcao("Você deseja salvar essas alterações?", "Salvar", "neutro");
     
@@ -172,7 +180,7 @@ formEditarPost.addEventListener('submit',async (event) =>{
     tipo: selectTipo.value,
     bairro: bairro,
     descricao: textareaDescricao.value,
-    whatsapp: inputWhatsapp.value
+    whatsapp: whatsappLimpo
 };
 
     try {
@@ -226,7 +234,7 @@ formEditarPost.addEventListener('submit',async (event) =>{
     console.error("Erro ao atualizar publicação:", erro);
 
     mostrarToast("Erro ao conectar com o servidor.", "erro");
-    
+
 } finally{
     setloading(btn, "Salvar alterações", false);
 }
