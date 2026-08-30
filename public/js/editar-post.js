@@ -226,6 +226,9 @@ formEditarPost.addEventListener('submit',async (event) =>{
     console.error("Erro ao atualizar publicação:", erro);
 
     mostrarToast("Erro ao conectar com o servidor.", "erro");
+    
+} finally{
+    setloading(btn, "Salvar alterações", false);
 }
 })
 const btnLogout = document.getElementById("btnLogout");
