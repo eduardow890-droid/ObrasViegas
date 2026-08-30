@@ -128,10 +128,14 @@ formulario.append(
     document.getElementById("descricao").value
 );
 
-formulario.append(
-    "whatsapp",
-    document.getElementById("whatsapp").value
-);
+const whatsappLimpo = document.getElementById("whatsapp").value.replace(/\D/g, "");
+
+if (whatsappLimpo.length < 10 || whatsappLimpo.length > 11) {
+    mostrarToast("Informe um número de WhatsApp válido com DDD. Ex: 21999999999", "aviso");
+    return;
+}
+
+formulario.append("whatsapp", whatsappLimpo);
 
 
 // =========================================================================
