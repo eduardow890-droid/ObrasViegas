@@ -220,7 +220,7 @@ app.post("/login", loginLimiter, async (req, res) => {
         if (!usuario || !(await bcrypt.compare(senha, usuario.senha))) {
             return res.status(401).json({
                 sucesso: false,
-                mensagem: "Email ou Senha incorretos"
+                mensagem: "Email ou Senha incorretos"   
             });
         }
 
