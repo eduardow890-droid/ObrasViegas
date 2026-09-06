@@ -31,18 +31,18 @@ form.addEventListener('submit', async (event) => {
             
         });
 
-        const data = await resposta.json();
+        const dados = await resposta.json();
 
-        if (data.sucesso) {
+        if (dados.sucesso) {
 
-            mostrarToast(data.mensagem, "sucesso");
+            mostrarToast(dados.mensagem, "sucesso");
 
             window.location.href = "/main";
 
             return;
         }
 
-mostrarToast(data.mensagem || "Não foi possível realizar o login.", "erro");
+mostrarToast(dados.mensagem || "Não foi possível realizar o login.", "erro");
 
     } catch (erro) {
 
@@ -60,4 +60,9 @@ document.getElementById('FazerCadastro').addEventListener('click', () => {
     window.location.href = "cadastro.html";
 
 });
+
+document.getElementById("FazerCadastroLoja").addEventListener("click", () => {
+    window.location.href = "/cadastroLoja.html";
+});
+
 

@@ -7,6 +7,7 @@ Plataforma web de classificados locais voltada para a comunidade de Viegas e reg
 ## Funcionalidades
 
 - Cadastro e login de usuários
+- Cadastro e login de lojas com filtro comercial no feed
 - Feed de publicações com foto
 - Busca por palavra-chave, bairro e tipo
 - Criação, edição e exclusão de publicações
@@ -93,15 +94,17 @@ ObrasViegas/
 
 ## Banco de dados
 
-Utiliza PostgreSQL hospedado no Supabase com três tabelas:
+Utiliza PostgreSQL hospedado no Supabase com as tabelas:
 
-**usuarios** — id, nome, email, senha (hash bcrypt), foto, created_at
+**contas** — id, tipo (`usuario`, `loja` ou `admin`), nome, email, senha (hash bcrypt), contato, bairro, categoria, foto, created_at
 
-**posts** — id, usuario_id, tipo, titulo, bairro, descricao, whatsapp, foto, created_at
+**posts** — id, conta_id, tipo, titulo, bairro, descricao, whatsapp, foto, created_at. A chave estrangeira aponta para `contas(id)` com `ON DELETE CASCADE`.
 
 **sessions** — gerenciada automaticamente pelo connect-pg-simple
 
-Índices criados em `posts.usuario_id` e `posts.created_at` para otimizar as queries do feed.
+Índices `idx_posts_conta_id` e `idx_posts_created_at` otimizam as consultas do feed e das publicações da conta.
+
+O schema completo está em `database/migrations/001_initial.sql` e deve ser executado no SQL Editor do Supabase antes de iniciar a aplicação.
 
 ---
 
@@ -151,6 +154,43 @@ node server.js
 ```
 
 Acesse `http://localhost:3000`.
+
+## Operação da aplicação
+
+### Fluxo por tipo de conta
+
+- `usuario`: após o login, acessa o feed em `/main`.
+- `loja`: após o login, acessa o mesmo feed em `/main`.
+- `admin`: o tipo está previsto no banco, mas ainda não possui uma área administrativa implementada.
+
+O feed compartilhado possui o filtro `Lojas`, que consulta apenas publicações de contas com `tipo = 'loja'`. A identificação comercial exibe o nome, a categoria e o bairro da loja.
+
+### Ordem para executar localmente
+
+1. Configure o `.env` com `DATABASE_URL`, `SESSION_SECRET`, `SUPABASE_URL` e `SUPABASE_SERVICE_KEY`.
+2. Execute `database/migrations/001_initial.sql` no PostgreSQL/Supabase.
+3. Confirme que a tabela `sessions` está acessível ao usuário da aplicação.
+4. Instale as dependências com `npm install`.
+5. Inicie com `npm start`.
+6. Teste cadastro, login, acesso ao painel, criação de post e logout.
+
+### Procedimento de deploy
+
+Antes de publicar uma nova versão:
+
+1. Faça backup ou confirme o ponto de restauração do banco.
+2. Execute novas migrações no Supabase antes de ativar o código que depende delas.
+3. Configure as variáveis no Render, sem colocar segredos no repositório.
+4. Mantenha `NODE_ENV=production` para habilitar cookies seguros.
+5. Verifique o login de usuário e loja, o redirecionamento do painel e a criação/exclusão de posts.
+6. Consulte os logs do Render para falhas de sessão, banco ou Storage.
+
+### Diagnóstico rápido
+
+- O filtro `Lojas` vazio: confirme se existem contas com `tipo = 'loja'` e posts associados por `conta_id`.
+- Erro de sessão: verifique `DATABASE_URL`, `SESSION_SECRET` e a tabela `sessions`.
+- Erro de publicação: valide a existência de `contas`, `posts`, `conta_id` e da chave estrangeira.
+- Erro de imagem: confira os buckets `perfil` e `posts` e a `SUPABASE_SERVICE_KEY`.
 
 ---
 

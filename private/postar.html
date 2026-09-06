@@ -3,16 +3,6 @@
 <head>
     <link rel="icon" type="image/png" href="/favicon.png">
     <meta charset="UTF-8">
-    <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-RT8D338WRZ"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-RT8D338WRZ');
-</script>
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Obras Viegas - Nova Publicação</title>
     <link rel="stylesheet" href="/css/global.css">
@@ -148,6 +138,11 @@
 
         <a href="/postar" class="nav-item btn-destaque ativo" aria-label="Criar publicação">+</a>
 
+        <a href="/main?criador=loja" class="nav-item nav-lojas">
+            <svg class="nav-icone" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9h18l-1 11H4L3 9Z"></path><path d="M5 9V5h14v4M8 13h8"></path></svg>
+            <span>Lojas</span>
+        </a>
+
         <a href="/perfil" class="nav-item">
             <svg class="nav-icone" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
@@ -157,6 +152,8 @@
         </a>
     </nav>
     <script src="/js/ui.js"></script>
+    <script src="/js/analytics.js"></script>
+    <script src="/js/account-theme.js"></script>
     <script src="/js/postar.js"></script>
 </body>
 </html>

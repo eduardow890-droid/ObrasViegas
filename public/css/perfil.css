@@ -83,6 +83,14 @@
     word-break: break-word;
 }
 
+.perfil-dados-comerciais {
+    color: var(--cor-primaria);
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    overflow-wrap: anywhere;
+}
+
 .perfil-descricao {
     color: var(--cor-texto-secundario);
     font-size: 13px;

@@ -3,6 +3,17 @@ const inputNome = document.getElementById("inputNome");
 const inputEmail = document.getElementById("inputEmail");
 const inputFoto = document.getElementById("inputFoto");
 const previewFoto = document.getElementById("previewFoto");
+const camposLoja = document.getElementById("camposLoja");
+const inputContato = document.getElementById("inputContato");
+const inputBairro = document.getElementById("inputBairro");
+const inputCategoria = document.getElementById("inputCategoria");
+
+function definirCamposComerciaisVisiveis(visiveis) {
+    camposLoja.hidden = !visiveis;
+    inputContato.disabled = !visiveis;
+    inputBairro.disabled = !visiveis;
+    inputCategoria.disabled = !visiveis;
+}
 
 function setloading(btn, textoOriginal, carregando){
     btn.disabled = carregando;
@@ -30,6 +41,15 @@ async function carregarEdicao() {
 
         inputNome.value = dados.usuario.nome;
         inputEmail.value = dados.usuario.email;
+
+        const eLoja = dados.usuario.tipo === "loja";
+        definirCamposComerciaisVisiveis(eLoja);
+
+        if (eLoja && camposLoja) {
+            inputContato.value = dados.usuario.contato || "";
+            inputBairro.value = dados.usuario.bairro || "";
+            inputCategoria.value = dados.usuario.categoria || "";
+        }
 
         if (dados.usuario.foto) {
             previewFoto.src = dados.usuario.foto;
@@ -76,6 +96,21 @@ formEditarPerfil.addEventListener("submit", async (event) => {
 
     formulario.append("nome", nome);
     formulario.append("email", email);
+
+    if (camposLoja && !camposLoja.hidden) {
+        const contato = inputContato.value.trim();
+        const bairro = inputBairro.value.trim();
+        const categoria = inputCategoria.value.trim();
+
+        if (!contato || !bairro || !categoria) {
+            mostrarToast("Preencha os dados comerciais da loja.", "aviso");
+            return;
+        }
+
+        formulario.append("contato", contato);
+        formulario.append("bairro", bairro);
+        formulario.append("categoria", categoria);
+    }
 
 
     // Só adiciona a foto se o usuário tiver escolhido uma

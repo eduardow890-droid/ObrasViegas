@@ -1,40 +1,54 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <link rel="icon" type="image/png" href="/favicon.png">
     <meta charset="UTF-8">
-    <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-RT8D338WRZ"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-RT8D338WRZ');
-</script>
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Obras viegas</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <title>Entrar | Obras Viegas</title>
     <link rel="stylesheet" href="/css/index.css">
-     <link rel="stylesheet" href="/css/aviso.css">
-     <link rel="stylesheet" href="/css/ui.css">
+    <link rel="stylesheet" href="/css/aviso.css">
+    <link rel="stylesheet" href="/css/ui.css">
 </head>
 <body>
-   <div class="conteiner">
-    <img id="logo" src="logo-escura.png" alt="Obras Viegas">
+    <main class="auth-page">
+      <section class="auth-intro" aria-labelledby="intro-title">
+        <div class="intro-content">
+          <a class="brand" href="/index.html" aria-label="Obras Viegas, início">Obras <span>Viegas</span></a>
+          <p class="eyebrow">Zona Oeste · Rio de Janeiro</p>
+          <h1 id="intro-title">Sua comunidade de serviços está <em>aqui</em></h1>
+          <p class="intro-description">Encontre profissionais de confiança, divulgue o que você faz e fortaleça as conexões do seu bairro.</p>
+          <ul class="benefits" aria-label="Recursos da plataforma">
+            <li><span class="benefit-icon" aria-hidden="true">▦</span><span><strong>Feed de publicações locais</strong><small>Serviços e pedidos perto de você</small></span></li>
+            <li><span class="benefit-icon" aria-hidden="true">⌕</span><span><strong>Busca por bairro</strong><small>Encontre soluções na sua região</small></span></li>
+            <li><span class="benefit-icon" aria-hidden="true">↗</span><span><strong>Contato direto pelo WhatsApp</strong><small>Converse sem intermediários</small></span></li>
+          </ul>
+        </div>
+        <p class="intro-footer">Obras Viegas · Zona Oeste, Rio de Janeiro</p>
+      </section>
+      <section class="auth-panel" aria-labelledby="login-title">
+        <div class="form-shell">
+          <div class="form-header">
+            <p class="form-kicker">Acesso da comunidade</p>
+            <h2 id="login-title">Entrar na conta</h2>
+            <p>Acesse sua conta para continuar</p>
+            <span class="accent-line" aria-hidden="true"></span>
+          </div>
+          <form id="formLogin" novalidate>
+            <div class="field"><label for="email">E-mail</label><input id="email" name="email" type="email" autocomplete="email" placeholder="seu@email.com"></div>
+            <div class="field"><label for="senha">Senha</label><input id="senha" name="senha" type="password" autocomplete="current-password" placeholder="Digite sua senha"></div>
+            <button class="primary-button" type="submit">Entrar</button>
+          </form>
+          <div class="secondary-links">
+            <a href="/cadastro.html" id="FazerCadastro" role="button">Não tem conta? <strong>Criar conta</strong></a>
+            <a href="/cadastroLoja.html" id="FazerCadastroLoja" role="button">É uma loja? <strong>Cadastre sua loja</strong></a>
+          </div>
+        </div>
+      </section>
+    </main>
 
-    <div class="header-app">
-        <p>Acesse sua conta para continuar</p>
-    </div>
-
-    <form id="formLogin">
-        <input id="email" type="email" class="login" placeholder="Digite seu e-mail">
-        <input id="senha" type="password" class="senhaLogin" placeholder="Digite sua senha">
-
-        <button type="submit">Entrar</button>
-        <button type="button" id="FazerCadastro">Crie sua conta</button>
-    </form>
-</div>
 <!-- Modal de Aviso de Testes -->
 <div id="modalAviso" class="modal-overlay-intro">
   <div class="modal-card">
@@ -55,7 +69,9 @@
     </div>
   </div>
 </div>
+
     <script src="/js/ui.js"></script>
+    <script src="/js/analytics.js"></script>
     <script src="/js/login.js"></script>
     <script src="/js/aviso.js"></script>
 </body>
