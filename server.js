@@ -61,6 +61,16 @@ function extrairNomeArquivoStorage(url) {
 const app = express();
 const porta = process.env.PORT || 3000;
 
+const diretivasCsp = helmet.contentSecurityPolicy.getDefaultDirectives();
+diretivasCsp["script-src"].push("https://www.googletagmanager.com");
+diretivasCsp["connect-src"] = [
+    "'self'",
+    "https://www.google-analytics.com",
+    "https://analytics.google.com",
+    "https://region1.google-analytics.com"
+];
+diretivasCsp["img-src"].push("blob:", "https://umbqphkbvwjbxschtfnl.supabase.co");
+
 app.set("trust proxy", 1);
 
 // Multer em memória (sem salvar no disco)
@@ -78,10 +88,7 @@ const uploadPost = multer({
 
 app.use(helmet({
     contentSecurityPolicy: {
-        directives: {
-            ...helmet.contentSecurityPolicy.getDefaultDirectives(),
-            "img-src": ["'self'", "data:", "blob:", "https://umbqphkbvwjbxschtfnl.supabase.co"]
-        }
+        directives: diretivasCsp
     }
 }));
 
@@ -172,8 +179,9 @@ app.post("/cadastrar", async (req, res) => {
     try {
         const senhaHash = await bcrypt.hash(senha, 10);
 
+        // Ajustado para inserir na tabela unificada 'contas' com o tipo 'usuario'
         await pool.query(
-            `INSERT INTO usuarios (nome, email, senha) VALUES ($1, $2, $3)`,
+            `INSERT INTO contas (tipo, nome, email, senha) VALUES ('usuario', $1, $2, $3)`,
             [nomeLimpo, emailLimpo, senhaHash]
         );
 
@@ -197,56 +205,91 @@ app.post("/cadastrar", async (req, res) => {
     }
 });
 
+app.post("/cadastrar-loja", async (req, res) => {
+    const { nome, email, senha, contato, bairro, categoria } = req.body;
+
+    // Valida se todos os campos obrigatórios da loja foram preenchidos
+    if (!nome || !email || !senha || !contato || !bairro || !categoria) {
+        return res.status(400).json({ sucesso: false, mensagem: "Preencha todos os campos obrigatórios da loja" });
+    }
+
+    if ([nome, email, senha, contato, bairro, categoria].some(campo => campo.trim() === "")) {
+        return res.status(400).json({ sucesso: false, mensagem: "Nenhum campo pode ficar em branco" });
+    }
+
+    const senhaValida = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/;
+    if (!senhaValida.test(senha)) {
+        return res.status(400).json({
+            sucesso: false,
+            mensagem: "A senha deve ter pelo menos 8 caracteres, uma letra, um número e um caractere especial"
+        });
+    }
+
+    const nomeLimpo = nome.trim(); // Nome Comercial da Loja
+    const emailLimpo = email.trim().toLowerCase();
+
+    try {
+        const senhaHash = await bcrypt.hash(senha, 10);
+
+        // Insere na tabela 'contas' com o tipo 'loja' salvando os campos extras comerciais
+        await pool.query(
+            `INSERT INTO contas (tipo, nome, email, senha, contato, bairro, categoria) 
+             VALUES ('loja', $1, $2, $3, $4, $5, $6)`,
+            [nomeLimpo, emailLimpo, senhaHash, contato.trim(), bairro.trim(), categoria.trim()]
+        );
+
+        return res.status(201).json({ sucesso: true, mensagem: "Loja cadastrada com sucesso!" });
+    } catch (erro) {
+        if (erro.code === "23505") {
+            return res.status(409).json({ sucesso: false, mensagem: "Email já cadastrado" });
+        }
+        console.error("Erro ao cadastrar loja:", erro);
+        return res.status(500).json({ sucesso: false, mensagem: "Erro ao cadastrar a loja" });
+    }
+});
+
 app.post("/login", loginLimiter, async (req, res) => {
     const { email, senha } = req.body;
 
     if (!email || !senha) {
-        return res.status(400).json({
-            sucesso: false,
-            mensagem: "Informe o email e a senha."
-        });
+        return res.status(400).json({ sucesso: false, mensagem: "Informe o email e a senha." });
     }
 
     const emailLimpo = email.trim().toLowerCase();
 
     try {
+        // Busca na tabela 'contas' puxando também o tipo do perfil
         const resultado = await pool.query(
-            `SELECT id, nome, email, senha FROM usuarios WHERE email = $1`,
+            `SELECT id, nome, email, senha, tipo FROM contas WHERE email = $1`,
             [emailLimpo]
         );
 
-        const usuario = resultado.rows[0];
+        const conta = resultado.rows[0];
 
-        if (!usuario || !(await bcrypt.compare(senha, usuario.senha))) {
-            return res.status(401).json({
-                sucesso: false,
-                mensagem: "Email ou Senha incorretos"   
-            });
+        if (!conta || !(await bcrypt.compare(senha, conta.senha))) {
+            return res.status(401).json({ sucesso: false, mensagem: "Email ou Senha incorretos" });
         }
 
         req.session.regenerate((erro) => {
             if (erro) {
                 console.error("Erro ao criar sessão:", erro);
-                return res.status(500).json({
-                    sucesso: false,
-                    mensagem: "Erro ao realizar login."
-                });
+                return res.status(500).json({ sucesso: false, mensagem: "Erro ao realizar login." });
             }
 
-            req.session.usuarioId = usuario.id;
+            // Agora guardamos o id e também o tipo de perfil que logou
+            req.session.usuarioId = conta.id;
+            req.session.usuarioTipo = conta.tipo; 
 
             return res.json({
                 sucesso: true,
-                mensagem: "Login realizado com sucesso"
+                mensagem: "Login realizado com sucesso",
+                tipo: conta.tipo // Retorna o tipo para o front gerenciar o redirecionamento
             });
         });
 
     } catch (erro) {
         console.error("Erro ao realizar login:", erro);
-        return res.status(500).json({
-            sucesso: false,
-            mensagem: "Erro ao realizar login."
-        });
+        return res.status(500).json({ sucesso: false, mensagem: "Erro ao realizar login." });
     }
 });
 
@@ -267,35 +310,27 @@ app.post("/logout", (req, res) => {
 
 app.get("/me", async (req, res) => {
     if (!req.session.usuarioId) {
-        return res.status(401).json({
-            autenticado: false,
-            mensagem: "Não autenticado"
-        });
+        return res.status(401).json({ autenticado: false, mensagem: "Não autenticado" });
     }
 
     try {
+        // Busca os dados na tabela contas incluindo as colunas específicas comerciais
         const resultado = await pool.query(
-            `SELECT id, nome, email, foto FROM usuarios WHERE id = $1`,
+            `SELECT id, tipo, nome, email, foto, contato, bairro, categoria FROM contas WHERE id = $1`,
             [req.session.usuarioId]
         );
 
-        const usuario = resultado.rows[0];
+        const conta = resultado.rows[0];
 
-        if (!usuario) {
-            return res.status(401).json({
-                autenticado: false,
-                mensagem: "Usuário não encontrado"
-            });
+        if (!conta) {
+            return res.status(401).json({ autenticado: false, message: "Conta não encontrada" });
         }
 
-        return res.json({ autenticado: true, usuario });
+        return res.json({ autenticado: true, usuario: conta });
 
     } catch (erro) {
-        console.error("Erro ao buscar usuário:", erro);
-        return res.status(500).json({
-            autenticado: false,
-            mensagem: "Erro ao buscar usuário."
-        });
+        console.error("Erro ao buscar dados da sessão:", erro);
+        return res.status(500).json({ autenticado: false, mensagem: "Erro ao buscar dados do usuário." });
     }
 });
 
@@ -366,8 +401,9 @@ app.post("/posts", verificarApi, uploadPost.single("foto"), async (req, res) => 
             urlFoto = await uploadParaStorage("posts", nomeArquivo, req.file.buffer, req.file.mimetype);
         }
 
+        // Modificado de usuario_id para conta_id
         await pool.query(
-            `INSERT INTO posts (usuario_id, tipo, titulo, bairro, descricao, whatsapp, foto)
+            `INSERT INTO posts (conta_id, tipo, titulo, bairro, descricao, whatsapp, foto)
              VALUES ($1, $2, $3, $4, $5, $6, $7)`,
             [req.session.usuarioId, tipoLimpo, tituloLimpo, bairroLimpo, descricaoLimpa, whatsappLimpo, urlFoto]
         );
@@ -387,12 +423,13 @@ app.post("/posts", verificarApi, uploadPost.single("foto"), async (req, res) => 
 });
 
 app.get("/posts", verificarApi, async (req, res) => {
-    const { busca, bairro, tipo } = req.query;
+    const { busca, bairro, tipo, criador } = req.query;
 
+    // Modificado JOIN para a tabela 'contas' trazendo também o 'tipo' e 'categoria' do criador
     let sql = `
         SELECT
             posts.id,
-            posts.usuario_id,
+            posts.conta_id,
             posts.tipo,
             posts.titulo,
             posts.bairro,
@@ -400,10 +437,12 @@ app.get("/posts", verificarApi, async (req, res) => {
             posts.whatsapp,
             posts.foto AS foto_post,
             posts.created_at,
-            usuarios.nome,
-            usuarios.foto
+            contas.nome,
+            contas.foto,
+            contas.tipo AS tipo_criador,
+            contas.categoria AS categoria_loja
         FROM posts
-        INNER JOIN usuarios ON posts.usuario_id = usuarios.id
+        INNER JOIN contas ON posts.conta_id = contas.id
         WHERE 1 = 1
     `;
 
@@ -411,7 +450,7 @@ app.get("/posts", verificarApi, async (req, res) => {
     let contador = 1;
 
     if (busca && busca.trim() !== "") {
-        sql += ` AND (posts.titulo ILIKE $${contador} OR posts.descricao ILIKE $${contador + 1} OR usuarios.nome ILIKE $${contador + 2})`;
+        sql += ` AND (posts.titulo ILIKE $${contador} OR posts.descricao ILIKE $${contador + 1} OR contas.nome ILIKE $${contador + 2})`;
         const termoBusca = `%${busca.trim()}%`;
         valores.push(termoBusca, termoBusca, termoBusca);
         contador += 3;
@@ -426,6 +465,11 @@ app.get("/posts", verificarApi, async (req, res) => {
     if (tipo && tipo.trim() !== "") {
         sql += ` AND posts.tipo = $${contador}`;
         valores.push(tipo.trim());
+        contador++;
+    }
+
+    if (criador === "loja") {
+        sql += " AND contas.tipo = 'loja'";
     }
 
     sql += " ORDER BY posts.created_at DESC";
@@ -444,8 +488,9 @@ app.get("/posts", verificarApi, async (req, res) => {
 
 app.get("/posts/:id", verificarApi, async (req, res) => {
     try {
+        // Modificado de usuario_id para conta_id
         const resultado = await pool.query(
-            `SELECT id, usuario_id, titulo, tipo, bairro, descricao, whatsapp, foto AS foto_post
+            `SELECT id, conta_id, titulo, tipo, bairro, descricao, whatsapp, foto AS foto_post
              FROM posts WHERE id = $1`,
             [req.params.id]
         );
@@ -500,8 +545,9 @@ app.put("/posts/:id", verificarApi, async (req, res) => {
     }
 
     try {
+        // Modificado de usuario_id para conta_id
         const resultado = await pool.query(
-            `SELECT id, usuario_id FROM posts WHERE id = $1`,
+            `SELECT id, conta_id FROM posts WHERE id = $1`,
             [req.params.id]
         );
 
@@ -514,7 +560,8 @@ app.put("/posts/:id", verificarApi, async (req, res) => {
             });
         }
 
-        if (post.usuario_id !== req.session.usuarioId) {
+        // Validação usando conta_id
+        if (post.conta_id !== req.session.usuarioId) {
             return res.status(403).json({
                 sucesso: false,
                 mensagem: "Você não pode editar esse post."
@@ -528,7 +575,7 @@ app.put("/posts/:id", verificarApi, async (req, res) => {
 
         return res.json({
             sucesso: true,
-            mensagem: "Post atualizado com sucesso."
+            mensagem: "Post updated com sucesso."
         });
 
     } catch (erro) {
@@ -542,8 +589,9 @@ app.put("/posts/:id", verificarApi, async (req, res) => {
 
 app.delete("/posts/:id", verificarApi, async (req, res) => {
     try {
+        // Modificado de usuario_id para conta_id
         const resultado = await pool.query(
-            `SELECT id, usuario_id, foto FROM posts WHERE id = $1`,
+            `SELECT id, conta_id, foto FROM posts WHERE id = $1`,
             [req.params.id]
         );
 
@@ -556,7 +604,8 @@ app.delete("/posts/:id", verificarApi, async (req, res) => {
             });
         }
 
-        if (post.usuario_id !== req.session.usuarioId) {
+        // Validação usando conta_id
+        if (post.conta_id !== req.session.usuarioId) {
             return res.status(403).json({
                 sucesso: false,
                 mensagem: "Você não pode excluir esse post"
@@ -586,29 +635,38 @@ app.delete("/posts/:id", verificarApi, async (req, res) => {
 
 app.get("/carregarPosts", verificarApi, async (req, res) => {
     try {
+        // Completado a rota com INNER JOIN modificado para a tabela contas
         const resultado = await pool.query(
-            `SELECT posts.id, posts.usuario_id, posts.tipo, posts.titulo, posts.bairro,
-                    posts.descricao, posts.whatsapp, posts.foto, posts.created_at, usuarios.nome
+            `SELECT 
+                posts.id, 
+                posts.conta_id, 
+                posts.tipo, 
+                posts.titulo, 
+                posts.bairro,
+                posts.descricao, 
+                posts.whatsapp, 
+                posts.foto, 
+                posts.created_at, 
+                contas.nome,
+                contas.foto AS foto_perfil,
+                contas.tipo AS tipo_criador
              FROM posts
-             INNER JOIN usuarios ON posts.usuario_id = usuarios.id
-             WHERE posts.usuario_id = $1
+             INNER JOIN contas ON posts.conta_id = contas.id
+             WHERE posts.conta_id = $1
              ORDER BY posts.created_at DESC`,
             [req.session.usuarioId]
         );
-
-        return res.json({
-            sucesso: true,
-            posts: resultado.rows
-        });
-
+        
+        return res.json({ sucesso: true, posts: resultado.rows });
     } catch (erro) {
-        console.error("Erro ao carregar posts do usuário:", erro);
+        console.error("Erro ao carregar posts:", erro);
         return res.status(500).json({
             sucesso: false,
-            mensagem: "Erro ao carregar suas publicações."
+            mensagem: "Erro ao carregar publicações"
         });
     }
 });
+
 
 // =============================================================================
 // Rotas de perfil
@@ -616,13 +674,13 @@ app.get("/carregarPosts", verificarApi, async (req, res) => {
 
 app.put("/perfil", verificarApi, upload.single("foto"), async (req, res) => {
     try {
-        const { nome, email } = req.body;
+        const { nome, email, contato, bairro, categoria } = req.body;
         const usuarioId = req.session.usuarioId;
 
         if (!nome || !email) {
             return res.status(400).json({
                 sucesso: false,
-                mensagem: "Preencha todos os campos."
+                mensagem: "Preencha os campos obrigatórios (nome e email)."
             });
         }
 
@@ -632,24 +690,39 @@ app.put("/perfil", verificarApi, upload.single("foto"), async (req, res) => {
         if (nomeLimpo === "" || emailLimpo === "") {
             return res.status(400).json({
                 sucesso: false,
-                mensagem: "Os campos não podem ficar vazios."
+                mensagem: "Os campos de nome e email não podem ficar vazios."
             });
         }
 
+        // Modificado para buscar da tabela 'contas' pegando a foto e o tipo de conta
         const resultUsuario = await pool.query(
-            `SELECT id, foto FROM usuarios WHERE id = $1`,
+            `SELECT id, foto, tipo FROM contas WHERE id = $1`,
             [usuarioId]
         );
 
-        const usuario = resultUsuario.rows[0];
+        const conta = resultUsuario.rows[0];
 
-        if (!usuario) {
+        if (!conta) {
             return res.status(404).json({
                 sucesso: false,
-                mensagem: "Usuário não encontrado."
+                mensagem: "Perfil não encontrado."
             });
         }
 
+        // Se for loja, valida se os campos extras obrigatórios foram enviados
+        if (conta.tipo === "loja") {
+            if (!contato || !bairro || !categoria || 
+                contato.trim() === "" || bairro.trim() === "" || categoria.trim() === "") {
+                return res.status(400).json({
+                    sucesso: false,
+                    mensagem: "Para lojas, os campos contato, bairro e categoria são obrigatórios."
+                });
+            }
+        }
+
+        let urlFoto = conta.foto; // Mantém a foto atual por padrão
+
+        // Se um novo arquivo foi enviado, realiza o upload e substituição no storage
         if (req.file) {
             const imagemValida = await validarImagem(req.file.buffer);
 
@@ -661,22 +734,29 @@ app.put("/perfil", verificarApi, upload.single("foto"), async (req, res) => {
             }
 
             const nomeArquivo = `perfil-${usuarioId}-${Date.now()}${extensaoPorMime(req.file.mimetype)}`;
-            const urlFoto = await uploadParaStorage("perfil", nomeArquivo, req.file.buffer, req.file.mimetype);
+            urlFoto = await uploadParaStorage("perfil", nomeArquivo, req.file.buffer, req.file.mimetype);
 
-            await pool.query(
-                `UPDATE usuarios SET nome = $1, email = $2, foto = $3 WHERE id = $4`,
-                [nomeLimpo, emailLimpo, urlFoto, usuarioId]
-            );
-
-            if (usuario.foto) {
-                const nomeAntigo = extrairNomeArquivoStorage(usuario.foto);
+            // Se existia uma foto antiga, remove ela do storage para liberar espaço
+            if (conta.foto) {
+                const nomeAntigo = extrairNomeArquivoStorage(conta.foto);
                 await removerDoStorage("perfil", nomeAntigo);
             }
+        }
 
-        } else {
+        // Atualização Dinâmica com base no tipo de conta
+        if (conta.tipo === "loja") {
+            // Atualiza campos de usuário + dados comerciais da loja
             await pool.query(
-                `UPDATE usuarios SET nome = $1, email = $2 WHERE id = $3`,
-                [nomeLimpo, emailLimpo, usuarioId]
+                `UPDATE contas 
+                 SET nome = $1, email = $2, foto = $3, contato = $4, bairro = $5, categoria = $6 
+                 WHERE id = $7`,
+                [nomeLimpo, emailLimpo, urlFoto, contato.trim(), bairro.trim(), categoria.trim(), usuarioId]
+            );
+        } else {
+            // Atualiza apenas os dados básicos de usuário comum
+            await pool.query(
+                `UPDATE contas SET nome = $1, email = $2, foto = $3 WHERE id = $4`,
+                [nomeLimpo, emailLimpo, urlFoto, usuarioId]
             );
         }
 
@@ -691,7 +771,7 @@ app.put("/perfil", verificarApi, upload.single("foto"), async (req, res) => {
         if (erro.code === "23505") {
             return res.status(409).json({
                 sucesso: false,
-                mensagem: "Este e-mail já está sendo utilizado por outro usuário."
+                mensagem: "Este e-mail já está sendo utilizado por outra conta."
             });
         }
 
@@ -701,6 +781,7 @@ app.put("/perfil", verificarApi, upload.single("foto"), async (req, res) => {
         });
     }
 });
+
 
 // =============================================================================
 // Middlewares de erro do Multer

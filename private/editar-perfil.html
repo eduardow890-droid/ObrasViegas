@@ -4,17 +4,6 @@
 <head>
     <link rel="icon" type="image/png" href="/favicon.png">
     <meta charset="UTF-8">
-    <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-RT8D338WRZ"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-RT8D338WRZ');
-</script>
-
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Obras Viegas - Editar Perfil</title>
@@ -23,8 +12,10 @@
     <link rel="stylesheet" href="/css/editar-perfil.css">
     <link rel="stylesheet" href="/css/ui.css">
     <script src="/js/ui.js"></script>
+    <script src="/js/analytics.js"></script>
     <script src="/js/animations.js" defer></script>
     <script src="/js/editar-perfil.js" defer></script>
+    <script src="/js/account-theme.js"></script>
 </head>
 
 <body>
@@ -106,6 +97,30 @@
                         required
                     >
 
+                </div>
+
+                <div id="camposLoja" class="campos-loja" hidden>
+                    <div class="form-grupo">
+                        <label for="inputContato">WhatsApp comercial</label>
+                        <input type="tel" id="inputContato" name="contato" placeholder="(21) 99999-9999">
+                    </div>
+
+                    <div class="form-grupo">
+                        <label for="inputBairro">Bairro da loja</label>
+                        <input type="text" id="inputBairro" name="bairro" placeholder="Ex: Bangu">
+                    </div>
+
+                    <div class="form-grupo">
+                        <label for="inputCategoria">Categoria do comércio</label>
+                        <select id="inputCategoria" name="categoria">
+                            <option value="">Selecione o segmento</option>
+                            <option value="Alimentação">Alimentação / Restaurante</option>
+                            <option value="Roupas">Roupas / Moda</option>
+                            <option value="Serviços">Prestação de Serviços</option>
+                            <option value="Mercado">Mercado / Mercearia</option>
+                            <option value="Outros">Outros</option>
+                        </select>
+                    </div>
                 </div>
 
 
@@ -217,6 +232,11 @@
             aria-label="Criar publicação"
         >
             +
+        </a>
+
+        <a href="/main?criador=loja" class="nav-item nav-lojas">
+            <svg class="nav-icone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9h18l-1 11H4L3 9Z"></path><path d="M5 9V5h14v4M8 13h8"></path></svg>
+            <span>Lojas</span>
         </a>
 
 

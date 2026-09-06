@@ -208,6 +208,74 @@ button:active, a:active {
     transition: all 0.2s ease;
 }
 
+.nav-item.nav-lojas {
+    color: #d6b46a;
+}
+
+.nav-item.nav-lojas:hover,
+.nav-item.nav-lojas.ativo {
+    color: #f4d58a;
+}
+
+.nav-item.nav-lojas svg {
+    filter: drop-shadow(0 0 6px rgba(214, 180, 106, 0.35));
+}
+
+.nav-item.filtro-lojas {
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+body.loja-premium {
+    --cor-primaria: #c69b45;
+    --cor-primaria-hover: #a77c2f;
+    --cor-primaria-glow: rgba(198, 155, 69, 0.28);
+}
+
+body.loja-premium .app-header {
+    border-bottom-color: rgba(198, 155, 69, 0.35);
+    box-shadow: 0 4px 22px rgba(198, 155, 69, 0.08);
+}
+
+body.loja-premium .logo h1 span {
+    color: #d6b46a;
+}
+
+body.loja-premium .bottom-nav {
+    border-top-color: rgba(198, 155, 69, 0.3);
+}
+
+body.loja-premium .bottom-nav::before {
+    content: "PERFIL COMERCIAL";
+    position: absolute;
+    top: -18px;
+    right: 16px;
+    padding: 3px 7px;
+    color: #f4d58a;
+    border: 1px solid rgba(198, 155, 69, 0.4);
+    border-radius: 4px;
+    background: #151d2a;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+}
+
+body.loja-premium .nav-item.btn-destaque {
+    background: #b88935;
+    border-color: #151d2a;
+    box-shadow: 0 8px 20px rgba(198, 155, 69, 0.34);
+}
+
+body.loja-premium .nav-item.btn-destaque:hover {
+    background: #d0a653;
+}
+
+body.loja-premium .post-card {
+    border-color: rgba(198, 155, 69, 0.28);
+}
+
 .nav-item svg, .nav-icone {
     width: 22px;
     height: 22px;

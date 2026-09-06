@@ -4,6 +4,7 @@ const totalPosts = document.getElementById("totalPosts");
 const totalServicos = document.getElementById("totalServicos");
 const totalPedidos = document.getElementById("totalPedidos");
 const fotoPerfil = document.getElementById("fotoPerfil");
+const dadosComerciais = document.getElementById("dadosComerciais");
 
 async function carregarPerfil(){
 
@@ -19,6 +20,10 @@ async function carregarPerfil(){
 
         nomeUsuario.textContent = dados.usuario.nome;
         emailUsuario.textContent =  dados.usuario.email;
+
+        if (dados.usuario.tipo === "loja" && dadosComerciais) {
+            dadosComerciais.textContent = `${dados.usuario.categoria || "Loja"} • ${dados.usuario.bairro || "Bairro não informado"} • ${dados.usuario.contato || "WhatsApp não informado"}`;
+        }
 
         if (dados.usuario.foto) {
         fotoPerfil.src = dados.usuario.foto;

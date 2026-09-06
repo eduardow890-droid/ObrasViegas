@@ -1,4 +1,9 @@
 const fotoPerfil = document.getElementById("fotoPerfil");
+const filtroLojas = document.getElementById("filtroLojas");
+const filtroTodos = document.querySelector(".btn-filtro");
+let filtroAtual = new URLSearchParams(window.location.search).get("criador") === "loja"
+    ? "lojas"
+    : "todos";
 
 
 async function carregarUsuario() {
@@ -73,13 +78,14 @@ document.getElementById("logout").addEventListener("click", async () => {
     }
 });
 
-async function carregarPosts(usuario) {
+async function carregarPosts(usuario, filtro = filtroAtual) {
    
     const listaPosts = document.getElementById("listaPosts");
    
    try{
    
-    const resposta = await fetch('/posts');
+    const parametroFiltro = filtro === "lojas" ? "?criador=loja" : "";
+    const resposta = await fetch(`/posts${parametroFiltro}`);
 
     const data = await resposta.json();
 
@@ -91,6 +97,8 @@ async function carregarPosts(usuario) {
 
         return;
     }
+
+    listaPosts.innerHTML = "";
 
     if (data.posts.length === 0) {
 
@@ -136,7 +144,18 @@ async function carregarPosts(usuario) {
 
         especialidade.classList.add("especialidade");
 
-        especialidade.textContent = `${tipoTexto} • ${post.bairro}`;
+        const dadosComerciais = post.tipo_criador === "loja"
+            ? `${post.categoria_loja || "Loja"} • ${post.bairro}`
+            : `${tipoTexto} • ${post.bairro}`;
+
+        especialidade.textContent = dadosComerciais;
+
+        if (post.tipo_criador === "loja") {
+            const etiquetaLoja = document.createElement("span");
+            etiquetaLoja.className = "etiqueta-loja";
+            etiquetaLoja.textContent = "Perfil comercial";
+            autorInfo.appendChild(etiquetaLoja);
+        }
 
         const conteudo = document.createElement('div');
 
@@ -185,7 +204,7 @@ async function carregarPosts(usuario) {
 
         avatar.alt = `Foto de ${post.nome}`;
 
-        if(post.usuario_id === usuario.id){
+        if(post.conta_id === usuario.id){
             const btnEditar = document.createElement("button");
 
             btnEditar.textContent = "Editar";
@@ -286,7 +305,32 @@ async function iniciarPagina() {
     if (!usuario){
         return
     }
-    await carregarPosts(usuario);
+    atualizarFiltroVisual();
+    await carregarPosts(usuario, filtroAtual);
 }
+
+function atualizarFiltroVisual() {
+    const lojasAtivo = filtroAtual === "lojas";
+
+    filtroLojas.classList.toggle("ativo", lojasAtivo);
+    filtroLojas.setAttribute("aria-pressed", String(lojasAtivo));
+    filtroTodos.classList.toggle("ativo", !lojasAtivo);
+}
+
+filtroLojas.addEventListener("click", async () => {
+    filtroAtual = filtroAtual === "lojas" ? "todos" : "lojas";
+    atualizarFiltroVisual();
+
+    const usuario = await carregarUsuario();
+    if (usuario) await carregarPosts(usuario, filtroAtual);
+});
+
+filtroTodos.addEventListener("click", async () => {
+    filtroAtual = "todos";
+    atualizarFiltroVisual();
+
+    const usuario = await carregarUsuario();
+    if (usuario) await carregarPosts(usuario, filtroAtual);
+});
 
 iniciarPagina();
