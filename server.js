@@ -112,6 +112,18 @@ app.use(session({
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
 
+function enviarPaginaLegal(nomeArquivo) {
+    return (req, res) => {
+        res.sendFile(path.join(__dirname, "public", "legal", nomeArquivo));
+    };
+}
+
+app.get("/termos", enviarPaginaLegal("termos.html"));
+app.get("/privacidade", enviarPaginaLegal("privacidade.html"));
+app.get("/conteudo", enviarPaginaLegal("conteudo.html"));
+app.get("/isencao", enviarPaginaLegal("isencao.html"));
+app.get("/cookies", enviarPaginaLegal("cookies.html"));
+
 function verificarLogin(req, res, next) {
     if (!req.session.usuarioId) {
         return res.redirect("/index.html");
