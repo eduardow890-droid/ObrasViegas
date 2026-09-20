@@ -16,7 +16,7 @@ Esta Política explica como o Obras Viegas coleta, utiliza, armazena e protege d
 
 Podemos coletar nome, e-mail, senha, foto de perfil, WhatsApp, bairro, conteúdo publicado, nome comercial, categoria, foto da loja e informações técnicas necessárias ao funcionamento e à segurança, como sessão, navegador, dispositivo, endereço IP e registros técnicos.
 
-Os dados são coletados quando você cria uma conta, realiza login, atualiza o perfil, publica conteúdo, cadastra uma loja, envia imagem ou utiliza funcionalidades e ferramentas de análise.
+Os dados são coletados quando você cria uma conta, realiza login, atualiza o perfil, publica conteúdo, cadastra uma loja, envia imagem ou utiliza funcionalidades. As ferramentas de análise somente são ativadas após o aceite dos cookies de análise no banner de consentimento.
 
 ## 3. Finalidades e bases legais
 
@@ -48,9 +48,9 @@ Nos termos do artigo 18 da LGPD, o titular pode solicitar confirmação de trata
 
 Solicitações podem ser feitas por **wagner.eduardo2025@outlook.com**. Poderemos solicitar informações razoáveis para confirmar a identidade.
 
-## 8. Cookies, menores e alterações
+## 8. Cookies, consentimento, menores e alterações
 
-Utilizamos cookies essenciais para sessão e, quando configurado, cookies de análise do Google Analytics. Consulte a Política de Cookies.
+Utilizamos cookies essenciais para sessão. Cookies de análise do Google Analytics somente são habilitados após o usuário selecionar **Aceitar análise** no banner de consentimento. A opção **Rejeitar análise** mantém essa ferramenta desabilitada. Consulte a Política de Cookies para detalhes.
 
 A plataforma é destinada a maiores de 18 anos e não busca conscientemente coletar dados de menores para cadastro regular.
 
