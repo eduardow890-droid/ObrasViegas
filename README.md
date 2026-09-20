@@ -14,6 +14,8 @@ Plataforma web de classificados locais voltada para a comunidade de Viegas e reg
 - Gerenciamento de perfil com foto
 - Controle de propriedade — cada usuário edita e exclui apenas seus próprios posts
 - Contato direto via WhatsApp
+- Consentimento para aceitar ou rejeitar cookies de análise
+- Validação de tamanho, formato e conteúdo nos dados de autenticação
 
 ---
 
@@ -30,6 +32,7 @@ Plataforma web de classificados locais voltada para a comunidade de Viegas e reg
 - Helmet
 - express-rate-limit
 - dotenv
+- Node Test Runner para testes automatizados
 
 **Frontend**
 - HTML, CSS e JavaScript puro
@@ -48,6 +51,8 @@ Plataforma web de classificados locais voltada para a comunidade de Viegas e reg
 - Senhas criptografadas com bcrypt
 - Sessões persistentes no PostgreSQL
 - Cookies com `httpOnly`, `sameSite` e `secure` em produção
+- Cookies de análise carregados somente após consentimento do usuário
+- Banner de consentimento com opções de aceitar ou rejeitar análise
 - Regeneração de sessão após login
 - Rate limiting no login (5 tentativas por IP a cada 15 minutos)
 - Headers de segurança via Helmet com CSP configurada
@@ -57,6 +62,9 @@ Plataforma web de classificados locais voltada para a comunidade de Viegas e reg
 - Prepared statements em todas as queries (sem SQL Injection)
 - Todo conteúdo dinâmico inserido via `textContent` (sem XSS)
 - Páginas privadas servidas apenas via servidor autenticado
+- Validação de nome, email, senha, contato, bairro e categoria no cadastro/login
+- Limites de tamanho para os campos de autenticação
+- Bloqueio de caracteres de controle e palavras proibidas em nomes
 - Variáveis sensíveis via `.env` (nunca commitadas)
 
 ---
@@ -83,6 +91,12 @@ ObrasViegas/
 │   ├── database.js          → Conexão com PostgreSQL via pool
 │   └── migrations/
 │       └── 001_initial.sql  → Schema de referência
+│
+├── docs/                    → Políticas de privacidade, cookies e uso
+├── tests/                   → Testes unitários e de integração
+│   ├── unit/
+│   ├── integration/
+│   └── helpers/
 │
 ├── server.js                → Servidor Express (rotas, middlewares, API)
 ├── package.json
@@ -150,10 +164,29 @@ No SQL Editor do Supabase, execute o arquivo `database/migrations/001_initial.sq
 
 **5. Inicie o servidor**
 ```bash
-node server.js
+npm start
 ```
 
 Acesse `http://localhost:3000`.
+
+### Scripts disponíveis
+
+```bash
+npm start                         # inicia o servidor
+npm test                          # executa todos os testes
+npm run test:unit                 # executa testes sem banco externo
+npm run test:integration          # executa testes com PostgreSQL
+```
+
+Os testes de integração usam o banco definido em `DATABASE_URL`. Para impedir
+que sejam ignorados quando o banco estiver indisponível, execute:
+
+```bash
+REQUIRE_TEST_DB=1 npm run test:integration
+```
+
+Use um banco de teste separado do banco de produção. Os testes criam e removem
+contas e publicações durante a execução.
 
 ## Operação da aplicação
 
@@ -165,6 +198,51 @@ Acesse `http://localhost:3000`.
 
 O feed compartilhado possui o filtro `Lojas`, que consulta apenas publicações de contas com `tipo = 'loja'`. A identificação comercial exibe o nome, a categoria e o bairro da loja.
 
+### Consentimento de cookies
+
+O banner de cookies aparece nas páginas públicas, privadas e legais. A escolha
+fica armazenada no `localStorage` do navegador:
+
+- `aceito`: habilita o Google Analytics;
+- `rejeitado`: mantém o Analytics desabilitado.
+
+O cookie de sessão `connect.sid` é essencial para autenticação e continua sendo
+utilizado nas áreas que exigem login. Consulte `docs/politica-de-cookies.md` ou
+a rota `/cookies` para mais informações.
+
+### Validações de autenticação
+
+O cadastro de usuário e loja valida os dados no backend em
+`validators/authValidator.js`:
+
+| Campo | Limite |
+|---|---:|
+| Nome de usuário | 80 caracteres |
+| Nome de loja | 100 caracteres |
+| Email | 254 caracteres |
+| Senha | mínimo 8 e máximo 72 bytes |
+| Contato | 10 ou 11 dígitos após normalização |
+| Bairro | 60 caracteres |
+
+O login valida presença, tipo, formato do email e limite da senha, sem repetir
+a regra de complexidade usada no cadastro.
+
+### Endpoints relevantes
+
+| Método | Rota | Finalidade |
+|---|---|---|
+| `POST` | `/cadastrar` | Cadastro de usuário |
+| `POST` | `/cadastrar-loja` | Cadastro de loja |
+| `POST` | `/login` | Autenticação |
+| `POST` | `/logout` | Encerramento da sessão |
+| `GET` | `/me` | Dados da conta autenticada |
+| `GET` | `/api/perfil` | Consulta da API de perfil |
+| `PUT` | `/perfil` | Atualização do perfil |
+| `GET` | `/posts` | Feed e filtros |
+| `POST` | `/posts` | Criação de publicação |
+| `PUT` | `/posts/:id` | Edição da própria publicação |
+| `DELETE` | `/posts/:id` | Exclusão da própria publicação |
+
 ### Ordem para executar localmente
 
 1. Configure o `.env` com `DATABASE_URL`, `SESSION_SECRET`, `SUPABASE_URL` e `SUPABASE_SERVICE_KEY`.
@@ -172,7 +250,9 @@ O feed compartilhado possui o filtro `Lojas`, que consulta apenas publicações 
 3. Confirme que a tabela `sessions` está acessível ao usuário da aplicação.
 4. Instale as dependências com `npm install`.
 5. Inicie com `npm start`.
-6. Teste cadastro, login, acesso ao painel, criação de post e logout.
+6. Execute `npm run test:unit`.
+7. Execute os testes de integração com um banco de teste acessível.
+8. Teste cadastro, login, acesso ao painel, criação de post e logout.
 
 ### Procedimento de deploy
 
@@ -183,7 +263,8 @@ Antes de publicar uma nova versão:
 3. Configure as variáveis no Render, sem colocar segredos no repositório.
 4. Mantenha `NODE_ENV=production` para habilitar cookies seguros.
 5. Verifique o login de usuário e loja, o redirecionamento do painel e a criação/exclusão de posts.
-6. Consulte os logs do Render para falhas de sessão, banco ou Storage.
+6. Verifique o banner de consentimento e confirme que o Analytics só é carregado após aceite.
+7. Consulte os logs do Render para falhas de sessão, banco ou Storage.
 
 ### Diagnóstico rápido
 
@@ -211,6 +292,10 @@ As variáveis de ambiente são configuradas diretamente no painel do Render — 
 | `SUPABASE_SERVICE_KEY` | Chave de acesso ao Supabase |
 | `DATABASE_URL` | Connection string do PostgreSQL |
 | `NODE_ENV` | `development` ou `production` |
+
+`REQUIRE_TEST_DB` é opcional e deve ser usado nos testes. Quando definido como
+`1`, os testes de integração falham se não conseguirem acessar o banco, em vez
+de serem ignorados.
 
 ---
 

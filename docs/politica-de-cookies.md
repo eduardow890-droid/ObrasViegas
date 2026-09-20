@@ -22,11 +22,15 @@ O cookie `connect.sid` identifica a sessão autenticada. Sem ele, funcionalidade
 
 O Obras Viegas utiliza o Google Analytics para obter estatísticas sobre páginas acessadas, navegação, quantidade de acessos, desempenho e informações técnicas. A configuração deve buscar reduzir informações pessoais desnecessárias e observar a legislação aplicável.
 
-Cookies não essenciais podem ser recusados pelas configurações do navegador ou pelas ferramentas de gerenciamento disponibilizadas pela plataforma, quando aplicável.
+O Analytics não é inicializado antes da escolha do usuário. O banner de consentimento oferece as opções **Aceitar análise** e **Rejeitar análise**. Ao aceitar, os scripts do Google Analytics podem ser carregados e os cookies de análise podem ser criados. Ao rejeitar, o Analytics permanece desabilitado.
+
+A escolha é armazenada no `localStorage` do navegador com a chave `obrasViegasConsentimentoCookies`. Esse registro não é usado para rastreamento; ele apenas evita exibir novamente o banner e conserva a preferência do usuário.
 
 ## 4. Controle pelo navegador
 
-O usuário pode controlar ou excluir cookies nas configurações de privacidade do Chrome, Firefox, Safari ou outro navegador. O bloqueio de cookies essenciais pode impedir funcionalidades do Obras Viegas.
+O usuário pode controlar ou excluir cookies e dados locais nas configurações de privacidade do Chrome, Firefox, Safari ou outro navegador. Também pode apagar o registro de consentimento para que o banner seja exibido novamente.
+
+O bloqueio do cookie essencial `connect.sid` pode impedir login, permanência da sessão e acesso às áreas autenticadas do Obras Viegas.
 
 ## 5. Alterações e contato
 

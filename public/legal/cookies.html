@@ -21,10 +21,10 @@
         <h2>2. Cookies essenciais</h2>
         <p>O cookie <code>connect.sid</code> identifica a sessão autenticada. Sem ele, funcionalidades como permanecer conectado podem não funcionar. Na configuração atual, a sessão usa <code>HttpOnly</code>, <code>SameSite=Lax</code>, <code>Secure</code> em produção e validade máxima de 24 horas.</p>
         <h2>3. Google Analytics</h2>
-        <p>O Obras Viegas utiliza o Google Analytics para obter estatísticas sobre páginas acessadas, navegação, quantidade de acessos, desempenho e informações técnicas. A configuração deve buscar reduzir informações pessoais desnecessárias e observar a legislação aplicável.</p>
-        <p>Cookies não essenciais podem ser recusados pelas configurações do navegador ou pelas ferramentas de gerenciamento disponibilizadas pela plataforma, quando aplicável.</p>
+        <p>O Obras Viegas utiliza o Google Analytics para obter estatísticas sobre páginas acessadas, navegação, quantidade de acessos, desempenho e informações técnicas. O Analytics somente é inicializado após o usuário aceitar os cookies de análise no banner de consentimento.</p>
+        <p>Ao selecionar <strong>Rejeitar análise</strong>, o Analytics permanece desabilitado. A escolha é armazenada no <code>localStorage</code> do navegador com a chave <code>obrasViegasConsentimentoCookies</code>, apenas para conservar a preferência do usuário.</p>
         <h2>4. Controle pelo navegador</h2>
-        <p>O usuário pode controlar ou excluir cookies nas configurações de privacidade do Chrome, Firefox, Safari ou outro navegador. O bloqueio de cookies essenciais pode impedir funcionalidades do Obras Viegas.</p>
+        <p>O usuário pode controlar ou excluir cookies e dados locais nas configurações de privacidade do Chrome, Firefox, Safari ou outro navegador. O bloqueio do cookie essencial <code>connect.sid</code> pode impedir o login e o acesso às áreas autenticadas do Obras Viegas.</p>
         <h2>5. Alterações e contato</h2>
         <p>Esta Política poderá ser atualizada quando houver mudanças nos serviços, na tecnologia ou na legislação. A versão vigente ficará disponível na plataforma.</p>
         <p><strong>Contato:</strong> wagner.eduardo2025@outlook.com</p>
