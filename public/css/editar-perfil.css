@@ -90,6 +90,32 @@
     color: var(--cor-texto-mutado);
 }
 
+.form-grupo select {
+    background: var(--cor-fundo);
+    border: 1px solid var(--cor-borda);
+    border-radius: var(--raio-input);
+    color: var(--cor-texto);
+    min-height: 46px;
+    outline: none;
+    padding: 11px 14px;
+    width: 100%;
+}
+
+.form-grupo select:focus {
+    border-color: var(--cor-primaria);
+    box-shadow: 0 0 0 3px var(--cor-primaria-glow);
+}
+
+.campos-loja {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.campos-loja[hidden] {
+    display: none;
+}
+
 /* =========================
    MENSAGEM DE STATUS
    ========================= */

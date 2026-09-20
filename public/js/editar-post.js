@@ -11,6 +11,11 @@ const inputWhatsapp = document.getElementById("inputWhatsapp");
 const nomeUsuario = document.getElementById("usuario");
 const fotoPerfil = document.getElementById("fotoPerfil");
 
+function setloading(btn, textoOriginal, carregando){
+    btn.disabled = carregando;
+    btn.textContent = carregando ? "Aguarde..." : textoOriginal;
+    btn.style.opacity = carregando ? "0.7" : "1";
+}
 
 async function carregarUsuario() {
 
@@ -23,7 +28,7 @@ async function carregarUsuario() {
         if (!resposta.ok) {
 
             if (resposta.status === 401) {
-                alert("Sua sessão expirou. Faça login novamente.");
+                mostrarToast("Sua sessão expirou. Faça login novamente.", "info");
                 window.location.href = "/index.html";
             }
 
@@ -53,11 +58,10 @@ async function carregarUsuario() {
 }
 
 
-console.log("ID DO POST:", postId);
 async function carregarPost() {
 
     if (!postId) {
-        alert("Publicação não encontrada.");
+        mostrarToast("Publicação não encontrada.", "erro");
         window.location.href = "/main";
         return;
     }
@@ -68,23 +72,21 @@ async function carregarPost() {
 
         const dados = await resposta.json();
 
-        console.log("Post recebido:", dados);
-
         if (!resposta.ok) {
 
             if (resposta.status === 401) {
-                alert("Sua sessão expirou. Faça login novamente.");
+                mostrarToast("Sua sessão expirou. Faça login novamente.", "info");
                 window.location.href = "/index.html";
                 return;
             }
 
             if (resposta.status === 404) {
-                alert("Publicação não encontrada.");
+                mostrarToast("Publicação não encontrada.", "erro");
                 window.location.href = "/main";
                 return;
             }
 
-            alert(dados.mensagem || "Não foi possível carregar a publicação.");
+            mostrarToast(dados.mensagem || "Não foi possível carregar a publicação.", "erro");
             window.location.href = "/main";
             return;
         }
@@ -120,7 +122,7 @@ async function carregarPost() {
 
         console.error("Erro ao carregar publicação:", erro);
 
-        alert("Erro ao conectar com o servidor.");
+        mostrarToast("Erro ao conectar com o servidor.", "erro");
         window.location.href = "/main";
     }
 }
@@ -144,9 +146,18 @@ selectBairro.addEventListener("change", () => {
 formEditarPost.addEventListener('submit',async (event) =>{
     event.preventDefault();
 
-    console.log("submit executada");
+            const btn = event.submitter || formEditarPost.querySelector("button[type='submit']");
 
-    const confirmar = confirm("Você deseja salvar essas alterações?")
+            // Validação do WhatsApp
+const whatsappLimpo = document.getElementById("inputWhatsapp").value.replace(/\D/g, "");
+
+if (whatsappLimpo.length < 10 || whatsappLimpo.length > 11) {
+    mostrarToast("Informe um número de WhatsApp válido com DDD. Ex: 21999999999", "aviso");
+    return;
+}
+
+
+    const confirmar = await confirmarAcao("Você deseja salvar essas alterações?", "Salvar", "neutro");
     
     if(!confirmar){
         return
@@ -159,7 +170,7 @@ formEditarPost.addEventListener('submit',async (event) =>{
     }
 
     if (!bairro) {
-    alert("Informe o bairro.");
+    mostrarToast("Informe o bairro.", "aviso");
     return;
 }
 
@@ -169,10 +180,12 @@ formEditarPost.addEventListener('submit',async (event) =>{
     tipo: selectTipo.value,
     bairro: bairro,
     descricao: textareaDescricao.value,
-    whatsapp: inputWhatsapp.value
+    whatsapp: whatsappLimpo
 };
 
     try {
+
+        setloading(btn, "Salvar alterações", true);
 
     const resposta = await fetch(`/posts/${postId}`, {
         method: "PUT",
@@ -184,35 +197,33 @@ formEditarPost.addEventListener('submit',async (event) =>{
 
     const dados = await resposta.json();
 
-    console.log("Resposta da atualização:", dados);
-
     if (!resposta.ok) {
 
         if (resposta.status === 401) {
-            alert("Sua sessão expirou. Faça login novamente.");
+            mostrarToast("Sua sessão expirou. Faça login novamente.", "info");
             window.location.href = "/index.html";
             return;
         }
 
         if (resposta.status === 403) {
-            alert("Você não pode editar essa publicação.");
+            mostrarToast("Você não pode editar essa publicação.", "erro");
             window.location.href = "/main";
             return;
         }
 
         if (resposta.status === 404) {
-            alert("Publicação não encontrada.");
+            mostrarToast("Publicação não encontrada.", "erro");
             window.location.href = "/main";
             return;
         }
 
-        alert(dados.mensagem || "Não foi possível atualizar a publicação.");
+        mostrarToast(dados.mensagem || "Não foi possível atualizar a publicação.", "erro");
         return;
     }
 
     if (dados.sucesso) {
 
-        alert(dados.mensagem || "Publicação atualizada com sucesso.");
+        mostrarToast(dados.mensagem || "Publicação atualizada com sucesso.", "sucesso");
 
         window.location.href = "/main";
         return;
@@ -222,7 +233,10 @@ formEditarPost.addEventListener('submit',async (event) =>{
 
     console.error("Erro ao atualizar publicação:", erro);
 
-    alert("Erro ao conectar com o servidor.");
+    mostrarToast("Erro ao conectar com o servidor.", "erro");
+
+} finally{
+    setloading(btn, "Salvar alterações", false);
 }
 })
 const btnLogout = document.getElementById("btnLogout");
@@ -230,7 +244,7 @@ const btnLogout = document.getElementById("btnLogout");
 if (btnLogout) {
     btnLogout.addEventListener("click", async () => {
 
-        const confirmacao = confirm("Deseja realmente sair?");
+        const confirmacao = await confirmarAcao("Deseja realmente sair?", "Sair");
 
         if (!confirmacao) {
             return;
@@ -249,14 +263,14 @@ if (btnLogout) {
                 return;
             }
 
-            alert(data.mensagem || "Não foi possível sair.");
+            mostrarToast(data.mensagem || "Não foi possível sair.", "erro");
 
         } catch (erro) {
 
             console.error("Erro ao realizar logout:", erro);
 
-            alert("Erro ao conectar com o servidor.");
-        }
+            mostrarToast("Erro ao conectar com o servidor.", "erro");
+        } 
     });
 }
 async function iniciarPagina() {

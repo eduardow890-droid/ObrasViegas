@@ -1,4 +1,9 @@
 const fotoPerfil = document.getElementById("fotoPerfil");
+const filtroLojas = document.getElementById("filtroLojas");
+const filtroTodos = document.querySelector(".btn-filtro");
+let filtroAtual = new URLSearchParams(window.location.search).get("criador") === "loja"
+    ? "lojas"
+    : "todos";
 
 
 async function carregarUsuario() {
@@ -27,7 +32,7 @@ async function carregarUsuario() {
 
     console.error("Erro ao carregar usuário:", erro);
 
-    alert("Não foi possivel conectar ao servidor.");
+    mostrarToast("Não foi possivel conectar ao servidor.", "erro");
 
     return null;
 }
@@ -35,7 +40,7 @@ async function carregarUsuario() {
 
 document.getElementById("logout").addEventListener("click", async () => {
 
-    const confirmar = confirm("Deseja realmente sair?");
+   const confirmar = await confirmarAcao("Deseja realmente sair?", "Sair");
 
     if (!confirmar) {
         return;
@@ -53,9 +58,9 @@ document.getElementById("logout").addEventListener("click", async () => {
 
             console.error("Erro ao realizar logout:", data);
 
-            alert(
+            mostrarToast(
                 data.mensagem ||
-                "Não foi possível sair da conta."
+                "Não foi possível sair da conta.", "erro"
             );
 
             return;
@@ -69,17 +74,18 @@ document.getElementById("logout").addEventListener("click", async () => {
 
         console.error("Erro de conexão ao realizar logout:", erro);
 
-        alert("Não foi possível conectar ao servidor.");
+        mostrarToast("Não foi possível conectar ao servidor.", "erro");
     }
 });
 
-async function carregarPosts(usuario) {
+async function carregarPosts(usuario, filtro = filtroAtual) {
    
     const listaPosts = document.getElementById("listaPosts");
    
    try{
    
-    const resposta = await fetch('/posts');
+    const parametroFiltro = filtro === "lojas" ? "?criador=loja" : "";
+    const resposta = await fetch(`/posts${parametroFiltro}`);
 
     const data = await resposta.json();
 
@@ -92,7 +98,7 @@ async function carregarPosts(usuario) {
         return;
     }
 
-    console.log("Posts recebidos:", data);
+    listaPosts.innerHTML = "";
 
     if (data.posts.length === 0) {
 
@@ -103,13 +109,7 @@ async function carregarPosts(usuario) {
 }
     
     data.posts.forEach(post => {
-        console.log("Post:", post)
         
-        if(post.usuario_id === usuario.id){
-            console.log("MEU POST:", post);
-        }else{
-            console.log("Post de outro usuario", post)
-        }
         const artigo = document.createElement("article");
 
         artigo.classList.add("post-card");
@@ -144,7 +144,18 @@ async function carregarPosts(usuario) {
 
         especialidade.classList.add("especialidade");
 
-        especialidade.textContent = `${tipoTexto} • ${post.bairro}`;
+        const dadosComerciais = post.tipo_criador === "loja"
+            ? `${post.categoria_loja || "Loja"} • ${post.bairro}`
+            : `${tipoTexto} • ${post.bairro}`;
+
+        especialidade.textContent = dadosComerciais;
+
+        if (post.tipo_criador === "loja") {
+            const etiquetaLoja = document.createElement("span");
+            etiquetaLoja.className = "etiqueta-loja";
+            etiquetaLoja.textContent = "Perfil comercial";
+            autorInfo.appendChild(etiquetaLoja);
+        }
 
         const conteudo = document.createElement('div');
 
@@ -193,7 +204,7 @@ async function carregarPosts(usuario) {
 
         avatar.alt = `Foto de ${post.nome}`;
 
-        if(post.usuario_id === usuario.id){
+        if(post.conta_id === usuario.id){
             const btnEditar = document.createElement("button");
 
             btnEditar.textContent = "Editar";
@@ -213,7 +224,7 @@ async function carregarPosts(usuario) {
             footer.appendChild(btnExcluir);
 
             btnExcluir.addEventListener('click', async () => {
-    const confirmar = confirm("Você deseja excluir essa publicação");
+   const confirmar = await confirmarAcao("Você deseja excluir essa publicação?", "Excluir");
 
     if (!confirmar) {
         return;
@@ -227,17 +238,15 @@ async function carregarPosts(usuario) {
 
         const dados = await resposta.json();
 
-        console.log(dados);
-
         if (!resposta.ok || !dados.sucesso) {
 
             if (resposta.status === 401) {
-                alert("Sua sessão expirou. Faça login novamente.");
+                mostrarToast("Sua sessão expirou. Faça login novamente.", "info");
                 window.location.href = "/index.html";
                 return;
             }
 
-            alert(dados.mensagem || "Não foi possível excluir a publicação.");
+            mostrarToast(dados.mensagem || "Não foi possível excluir a publicação.", "erro");
             return;
         }
 
@@ -247,7 +256,7 @@ async function carregarPosts(usuario) {
 
         console.error("Erro ao excluir publicação:", erro);
 
-        alert("Erro ao conectar com o servidor.");
+        mostrarToast("Erro ao conectar com o servidor.", "erro");
     }
 });
 
@@ -296,7 +305,32 @@ async function iniciarPagina() {
     if (!usuario){
         return
     }
-    await carregarPosts(usuario);
+    atualizarFiltroVisual();
+    await carregarPosts(usuario, filtroAtual);
 }
+
+function atualizarFiltroVisual() {
+    const lojasAtivo = filtroAtual === "lojas";
+
+    filtroLojas.classList.toggle("ativo", lojasAtivo);
+    filtroLojas.setAttribute("aria-pressed", String(lojasAtivo));
+    filtroTodos.classList.toggle("ativo", !lojasAtivo);
+}
+
+filtroLojas.addEventListener("click", async () => {
+    filtroAtual = filtroAtual === "lojas" ? "todos" : "lojas";
+    atualizarFiltroVisual();
+
+    const usuario = await carregarUsuario();
+    if (usuario) await carregarPosts(usuario, filtroAtual);
+});
+
+filtroTodos.addEventListener("click", async () => {
+    filtroAtual = "todos";
+    atualizarFiltroVisual();
+
+    const usuario = await carregarUsuario();
+    if (usuario) await carregarPosts(usuario, filtroAtual);
+});
 
 iniciarPagina();

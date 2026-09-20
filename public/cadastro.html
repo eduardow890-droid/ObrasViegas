@@ -1,32 +1,67 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <link rel="icon" type="image/png" href="/favicon.png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cadastro - Obras do Viegas</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <title>Criar conta | Obras Viegas</title>
     <link rel="stylesheet" href="/css/cadastro.css">
+    <link rel="stylesheet" href="/css/ui.css">
+    <link rel="stylesheet" href="/css/cookie-consent.css">
+    <link rel="stylesheet" href="/legal/legal-links.css">
 </head>
 <body>
 
-    <div class="conteiner">
-        <!-- Logo integrada ao card -->
-        <img id="logo" src="logo-escura.png" alt="Obras Viegas">
-
-        <div class="header-app">
-            <p>Crie sua conta e encontre serviços no bairro</p>
-        </div>
-
-        <form action="/cadastrar" method="post" id="formCadastro">
-            <input type="text" id="nomeUsuario" name="nome" placeholder="Digite seu nome completo" required>
-            <input type="email" id="emailCadastro" name="email" placeholder="Insira seu e-mail" required>
-            <input type="password" id="senhaCadastro" name="senha" placeholder="Crie sua senha" required>
-            
-            <button type="submit">Finalizar Cadastro</button>
-            <a href="/index.html" class="btn-voltar-login">Já tem uma conta? Faça login</a>
-        </form>
-    </div>
-
+    <main class="auth-page">
+        <section class="auth-intro" aria-labelledby="intro-title">
+            <div class="intro-content">
+                <a class="brand" href="/index.html" aria-label="Obras Viegas, início">Obras <span>Viegas</span></a>
+                <span class="badge">Para moradores e profissionais</span>
+                <p class="eyebrow">Plataforma de serviços locais</p>
+                <h1 id="intro-title">Publique seu serviço ou <em>encontre quem você precisa</em></h1>
+                <p class="intro-description">Crie seu espaço na comunidade para mostrar seu trabalho, pedir ajuda e encontrar profissionais próximos.</p>
+                <ul class="benefits" aria-label="Recursos da plataforma">
+                    <li><span class="benefit-icon" aria-hidden="true">＋</span><span><strong>Publique anúncios de serviço ou pedido de ajuda</strong><small>Dê visibilidade ao que você precisa</small></span></li>
+                    <li><span class="benefit-icon" aria-hidden="true">⌕</span><span><strong>Apareça nas buscas por bairro</strong><small>Seja encontrado por quem está perto</small></span></li>
+                    <li><span class="benefit-icon" aria-hidden="true">↗</span><span><strong>Receba contatos direto pelo WhatsApp</strong><small>Converse com rapidez e simplicidade</small></span></li>
+                </ul>
+            </div>
+            <footer class="intro-footer">
+                <p>Obras Viegas · Zona Oeste, Rio de Janeiro</p>
+                <nav class="legal-links" aria-label="Informações legais">
+                    <a href="/termos">Termos de Uso</a>
+                    <a href="/privacidade">Privacidade</a>
+                    <a href="/conteudo">Política de Conteúdo</a>
+                    <a href="/isencao">Isenção de Responsabilidade</a>
+                    <a href="/cookies">Política de Cookies</a>
+                </nav>
+            </footer>
+        </section>
+        <section class="auth-panel" aria-labelledby="cadastro-title">
+            <div class="form-shell">
+                <div class="form-header">
+                    <p class="form-kicker">Comece agora</p>
+                    <h2 id="cadastro-title">Criar conta</h2>
+                    <p>Grátis, rápido, sem complicação.</p>
+                    <span class="accent-line" aria-hidden="true"></span>
+                </div>
+                <form id="formCadastro" novalidate>
+                    <div class="field"><label for="nomeUsuario">Nome completo</label><input type="text" id="nomeUsuario" name="nome" autocomplete="name" placeholder="Digite seu nome completo"></div>
+                    <div class="field"><label for="emailCadastro">E-mail</label><input type="email" id="emailCadastro" name="email" autocomplete="email" placeholder="seu@email.com"></div>
+                    <div class="field"><label for="senhaCadastro">Senha</label><input type="password" id="senhaCadastro" name="senha" autocomplete="new-password" placeholder="Mín. 8 caracteres"></div>
+                    <button class="primary-button" type="submit">Criar conta</button>
+                </form>
+                <a href="/index.html" class="secondary-link">Já tem conta? <strong>Fazer login</strong></a>
+                <p class="security-note"><span aria-hidden="true">✦</span> Seus dados são protegidos e usados apenas para conectar você à comunidade.</p>
+            </div>
+        </section>
+    </main>
+    <script src="/js/ui.js"></script>
+    <script src="/js/cookie-consent.js" defer></script>
+    <script src="/js/analytics.js"></script>
     <script src="/js/cadastro.js"></script>
 </body>
 </html>

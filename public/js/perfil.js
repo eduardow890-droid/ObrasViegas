@@ -4,6 +4,7 @@ const totalPosts = document.getElementById("totalPosts");
 const totalServicos = document.getElementById("totalServicos");
 const totalPedidos = document.getElementById("totalPedidos");
 const fotoPerfil = document.getElementById("fotoPerfil");
+const dadosComerciais = document.getElementById("dadosComerciais");
 
 async function carregarPerfil(){
 
@@ -17,11 +18,12 @@ async function carregarPerfil(){
         return
         };
 
-        console.log("Nome:", dados.usuario.nome);
-        console.log("Email:", dados.usuario.email);
-
         nomeUsuario.textContent = dados.usuario.nome;
         emailUsuario.textContent =  dados.usuario.email;
+
+        if (dados.usuario.tipo === "loja" && dadosComerciais) {
+            dadosComerciais.textContent = `${dados.usuario.categoria || "Loja"} • ${dados.usuario.bairro || "Bairro não informado"} • ${dados.usuario.contato || "WhatsApp não informado"}`;
+        }
 
         if (dados.usuario.foto) {
         fotoPerfil.src = dados.usuario.foto;
@@ -42,9 +44,6 @@ async function carregarMeusPosts() {
     const resposta = await fetch("/carregarPosts");
 
     const texto = await resposta.text();
-
-console.log("Status:", resposta.status);
-console.log("Resposta do servidor:", texto);
 
 const dados = JSON.parse(texto);
 
@@ -145,9 +144,7 @@ if (post.foto) {
 
     botaoExcluir.addEventListener("click", async () => {
 
-    const confirmar = confirm(
-        "Você deseja excluir esta publicação?"
-    );
+   const confirmar = await confirmarAcao("Você deseja excluir esta publicação?", "Excluir");
 
     if (!confirmar) {
         return;
@@ -164,12 +161,12 @@ if (post.foto) {
         if (!resposta.ok || !dados.sucesso) {
 
             if (resposta.status === 401) {
-                alert("Sua sessão expirou. Faça login novamente.");
+                mostrarToast("Sua sessão expirou. Faça login novamente.", "info");
                 window.location.href = "/index.html";
                 return;
             }
 
-            alert(dados.mensagem || "Não foi possível excluir a publicação.");
+            mostrarToast(dados.mensagem || "Não foi possível excluir a publicação.", "erro");
             return;
         }
 
@@ -193,7 +190,7 @@ if (post.foto) {
 
         console.error("Erro ao excluir publicação:", erro);
 
-        alert("Erro ao conectar com o servidor.");
+        mostrarToast("Erro ao conectar com o servidor.", "erro");
     }
 });
 

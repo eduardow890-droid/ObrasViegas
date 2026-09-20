@@ -1,0 +1,20 @@
+.legal-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 12px;
+    margin-top: 12px;
+}
+
+.legal-links a {
+    color: inherit;
+    font-size: 11px;
+    text-decoration: none;
+}
+
+.legal-links a:hover {
+    color: var(--azul, var(--blue, #3b82f6));
+}
+
+@media (max-width: 768px) {
+    .legal-links { max-width: 280px; }
+}

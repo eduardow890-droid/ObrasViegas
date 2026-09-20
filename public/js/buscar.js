@@ -57,7 +57,7 @@ avatar.classList.add("post-avatar");
 if (post.foto) {
     avatar.src = post.foto;
 } else {
-    avatar.src = "/avatar-padrao.jpg";
+    avatar.src = "/img/avatar-padrao.jpg";
 }
 
 avatar.alt = `Foto de ${post.nome}`;
@@ -176,11 +176,8 @@ formBuscar.addEventListener("submit", async (event) => {
 
     const dados = await resposta.json();
 
-
-    console.log("Resultado:", dados);
-
    if (resposta.status === 401) {
-    alert("Sua sessão expirou. Faça login novamente.");
+    mostrarToast("Sua sessão expirou. Faça login novamente.", "erro");
     window.location.href = "/index.html";
     return;
 }
@@ -240,7 +237,7 @@ async function carregarUsuario() {
 } catch (erro) {
         console.error("Erro ao carregar usuário:", erro);
 
-        alert("Não foi possível conectar ao servidor.");
+        mostrarToast("Não foi possível conectar ao servidor.", "erro");
 
         return null
     }
@@ -250,7 +247,7 @@ const btnLogout = document.getElementById("btnLogout");
 if (btnLogout) {
     btnLogout.addEventListener("click", async () => {
 
-        const confirmacao = confirm("Deseja realmente sair?");
+        const confirmacao = await confirmarAcao("Deseja realmente sair?", "Sair");
 
         if (!confirmacao) {
             return;
@@ -269,13 +266,13 @@ if (btnLogout) {
                 return;
             }
 
-            alert(data.mensagem || "Não foi possível sair.");
+            mostrarToast(data.mensagem || "Não foi possível sair.", "erro");
 
         } catch (erro) {
 
             console.error("Erro ao realizar logout:", erro);
 
-            alert("Erro ao conectar com o servidor.");
+            mostrarToast("Erro ao conectar com o servidor.", "erro");
         }
     });
 }
