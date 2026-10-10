@@ -84,6 +84,7 @@ https://seu-servico.onrender.com/health
   - 5 tentativas por IP.
   - Janela de 15 minutos.
 - Headers de segurança com Helmet.
+- Validação de `Origin`/`Referer` nas requisições que alteram dados.
 - Content Security Policy configurada.
 - Proteção de propriedade dos posts.
 - Prepared statements nas consultas SQL.
@@ -438,6 +439,7 @@ SESSION_SECRET=sua_chave_secreta_longa
 SUPABASE_URL=https://seu-projeto.supabase.co
 SUPABASE_SERVICE_KEY=sua_chave_do_supabase
 DATABASE_URL=postgresql://usuario:senha@host:porta/banco
+APP_ORIGIN=https://seu-dominio.com
 NODE_ENV=development
 PORT=3000
 ```

@@ -4,6 +4,7 @@ const router = express.Router();
 const perfilController = require("../controllers/perfilController");
 const { verificarApi } = require("../middlewares/authMiddleware");
 const { filtroImagem } = require("../utils/imagem");
+const { verificarOrigem } = require("../middlewares/csrfMiddleware");
 
 const upload = multer({
     storage: multer.memoryStorage(),
@@ -14,6 +15,6 @@ const upload = multer({
 // A página HTML usa GET /perfil. A API de consulta fica em /api/perfil
 // para não haver colisão entre a página privada e o endpoint JSON.
 router.get("/api/perfil", verificarApi, perfilController.obterPerfil);
-router.put("/perfil", verificarApi, upload.single("foto"), perfilController.atualizarPerfil);
+router.put("/perfil", verificarOrigem, verificarApi, upload.single("foto"), perfilController.atualizarPerfil);
 
 module.exports = router;
