@@ -41,6 +41,20 @@ Plataforma web de classificados locais voltada para a comunidade de Viegas e reg
 - Express Rate Limit
 - Dotenv
 
+### Health check
+
+A rota pública `GET /health` retorna HTTP 200 quando o processo está respondendo:
+
+```json
+{ "status": "ok" }
+```
+
+Ela não consulta banco de dados nem exige autenticação e pode ser usada pelo UptimeRobot:
+
+```text
+https://seu-servico.onrender.com/health
+```
+
 ### Frontend
 
 - HTML

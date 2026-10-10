@@ -68,3 +68,17 @@ input:-webkit-autofill { -webkit-text-fill-color: var(--t1) !important; -webkit-
     .intro-footer { margin-top: 42px; }
     .auth-panel { padding: 52px 28px 64px; }
 }
+.terms-consent {
+    display: block;
+    margin: 1rem 0;
+    font-size: 0.85rem;
+    line-height: 1.5;
+}
+
+.terms-consent input {
+    margin-right: 0.35rem;
+}
+
+.terms-consent a {
+    text-decoration: underline;
+}

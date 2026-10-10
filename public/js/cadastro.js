@@ -17,7 +17,8 @@ form.addEventListener("submit", async (event) => {
     const usuario = {
         nome: document.getElementById("nomeUsuario").value,
         email: document.getElementById("emailCadastro").value,
-        senha: document.getElementById("senhaCadastro").value
+        senha: document.getElementById("senhaCadastro").value,
+        aceiteTermos: document.getElementById("aceiteTermos").checked
     };
 
     if (usuario.nome.trim() === "" ||
@@ -26,6 +27,11 @@ form.addEventListener("submit", async (event) => {
     ) {
     mostrarToast("Preencha os campos para finalizar o cadastro", "aviso");        
     return;
+    }
+
+    if (!usuario.aceiteTermos) {
+        mostrarToast("Aceite os Termos de Uso para continuar.", "aviso");
+        return;
     }
 
     // Mesma regra de complexidade validada no server.js — feedback imediato

@@ -16,6 +16,8 @@ CREATE TABLE IF NOT EXISTS public.contas (
     bairro TEXT,
     categoria TEXT,
     foto TEXT,
+    termos_versao_aceita VARCHAR(20),
+    termos_aceitos_em TIMESTAMPTZ,
     created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 

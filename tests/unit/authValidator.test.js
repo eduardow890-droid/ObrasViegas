@@ -11,14 +11,16 @@ test("valida cadastro de usuário e normaliza nome e email", () => {
     const resultado = validarCadastro({
         nome: "  Ana  ",
         email: " ANA@EXEMPLO.COM ",
-        senha: "Senha123!"
+        senha: "Senha123!",
+        aceiteTermos: true
     });
 
     assert.equal(resultado.valido, true);
     assert.deepEqual(resultado.dados, {
         nome: "Ana",
         email: "ana@exemplo.com",
-        senha: "Senha123!"
+        senha: "Senha123!",
+        termosVersao: "1.0"
     });
 });
 
@@ -40,7 +42,8 @@ test("valida cadastro de loja e normaliza dados comerciais", () => {
         senha: "Senha123!",
         contato: "21999999999",
         bairro: " Centro ",
-        categoria: " Construção "
+        categoria: " Construção ",
+        aceiteTermos: true
     });
 
     assert.equal(resultado.valido, true);
@@ -49,10 +52,21 @@ test("valida cadastro de loja e normaliza dados comerciais", () => {
     assert.equal(resultado.dados.categoria, "Construção");
 });
 
+test("exige aceite dos termos no cadastro", () => {
+    const resultado = validarCadastro({
+        nome: "Ana",
+        email: "ana@b.com",
+        senha: "Senha123!"
+    });
+
+    assert.equal(resultado.valido, false);
+    assert.match(resultado.mensagem, /Termos de Uso/);
+});
+
 test("exige os campos comerciais da loja", () => {
     const resultado = validarCadastroLoja({
         nome: "Loja", email: "loja@b.com", senha: "Senha123!",
-        contato: "", bairro: "Centro", categoria: "Construção"
+        contato: "", bairro: "Centro", categoria: "Construção", aceiteTermos: true
     });
     assert.equal(resultado.valido, false);
 });

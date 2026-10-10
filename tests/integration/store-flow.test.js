@@ -29,7 +29,8 @@ test("fluxo completo de loja: cadastro, login, perfil comercial e filtro de loja
             senha,
             contato: "21988887777",
             bairro: "Viegas",
-            categoria: "Materiais de construção"
+            categoria: "Construção",
+            aceiteTermos: true
         }
     });
     assert.equal(cadastro.statusCode, 201, cadastro.body);
@@ -45,7 +46,7 @@ test("fluxo completo de loja: cadastro, login, perfil comercial e filtro de loja
     const me = await json(server, "/me", { headers: { Cookie: cookie } });
     assert.equal(me.statusCode, 200, me.body);
     assert.equal(me.json().usuario.tipo, "loja");
-    assert.equal(me.json().usuario.categoria, "Materiais de construção");
+    assert.equal(me.json().usuario.categoria, "Construção");
 
     const criar = await json(server, "/posts", {
         method: "POST",

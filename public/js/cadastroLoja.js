@@ -7,6 +7,12 @@ document.getElementById("formCadastroLoja").addEventListener("submit", async (ev
     const contato = document.getElementById("contato").value;
     const bairro = document.getElementById("bairro").value;
     const categoria = document.getElementById("categoria").value;
+    const aceiteTermos = document.getElementById("aceiteTermos").checked;
+
+    if (!aceiteTermos) {
+        mostrarToast("Aceite os Termos de Uso para continuar.", "aviso");
+        return;
+    }
 
     try {
         const resposta = await fetch("/cadastrar-loja", {
@@ -14,7 +20,7 @@ document.getElementById("formCadastroLoja").addEventListener("submit", async (ev
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify({ nome, email, senha, contato, bairro, categoria })
+            body: JSON.stringify({ nome, email, senha, contato, bairro, categoria, aceiteTermos })
         });
 
         const dados = await resposta.json();

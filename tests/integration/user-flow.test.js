@@ -27,7 +27,7 @@ test("fluxo completo de usuário: cadastro, login, post, edição, exclusão e l
 
     const cadastro = await json(server, "/cadastrar", {
         method: "POST",
-        body: { nome: "Usuário de Teste", email, senha }
+        body: { nome: "Usuário de Teste", email, senha, aceiteTermos: true }
     });
     assert.equal(cadastro.statusCode, 201, cadastro.body);
 

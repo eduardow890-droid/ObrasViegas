@@ -1,4 +1,5 @@
 const { contemPalavraProibida } = require("./contentValidator");
+const { VERSAO_TERMOS_ATUAL } = require("../config/legal");
 
 const LIMITES = {
     nomeUsuario: 80,
@@ -112,7 +113,7 @@ function validarNome(valor, campo, maximo) {
 }
 
 function validarCadastro(entrada = {}) {
-    const { nome, email, senha } = entrada || {};
+    const { nome, email, senha, aceiteTermos } = entrada || {};
 
     const nomeValidado = validarNome(nome, "nome", LIMITES.nomeUsuario);
     if (!nomeValidado.valido) return nomeValidado;
@@ -123,18 +124,23 @@ function validarCadastro(entrada = {}) {
     const senhaValidada = validarSenha(senha);
     if (!senhaValidada.valido) return senhaValidada;
 
+    if (aceiteTermos !== true) {
+        return resultadoInvalido("É necessário aceitar os Termos de Uso.");
+    }
+
     return {
         valido: true,
         dados: {
             nome: nomeValidado.valor,
             email: emailValidado.valor,
-            senha: senhaValidada.valor
+            senha: senhaValidada.valor,
+            termosVersao: VERSAO_TERMOS_ATUAL
         }
     };
 }
 
 function validarCadastroLoja(entrada = {}) {
-    const { nome, email, senha, contato, bairro, categoria } = entrada || {};
+    const { nome, email, senha, contato, bairro, categoria, aceiteTermos } = entrada || {};
 
     const nomeValidado = validarNome(nome, "nome da loja", LIMITES.nomeLoja);
     if (!nomeValidado.valido) return nomeValidado;
@@ -164,6 +170,10 @@ function validarCadastroLoja(entrada = {}) {
         return resultadoInvalido("Selecione uma categoria de loja válida.");
     }
 
+    if (aceiteTermos !== true) {
+        return resultadoInvalido("É necessário aceitar os Termos de Uso.");
+    }
+
     return {
         valido: true,
         dados: {
@@ -172,7 +182,8 @@ function validarCadastroLoja(entrada = {}) {
             senha: senhaValidada.valor,
             contato: contatoNumeros,
             bairro: bairroValidado.valor,
-            categoria: categoria.trim()
+            categoria: categoria.trim(),
+            termosVersao: VERSAO_TERMOS_ATUAL
         }
     };
 }

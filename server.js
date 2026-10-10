@@ -18,8 +18,15 @@ const porta = process.env.PORT || 3000;
 
 app.set("trust proxy", 1);
 
-// Middlewares globais
+// Endpoint público e leve para health checks externos, como o UptimeRobot.
+// Não depende de sessão, banco de dados ou Supabase.
 app.use(configurarHelmet());
+app.get("/health", (req, res) => {
+    res.set("Cache-Control", "no-store");
+    return res.status(200).json({ status: "ok" });
+});
+
+// Middlewares globais
 app.use(configurarSession());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));

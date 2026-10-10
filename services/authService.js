@@ -1,20 +1,22 @@
 const bcrypt = require("bcrypt");
 const pool = require("../lib/database");
 
-async function criarUsuario({ nome, email, senha }) {
+async function criarUsuario({ nome, email, senha, termosVersao }) {
     const senhaHash = await bcrypt.hash(senha, 10);
     await pool.query(
-        `INSERT INTO contas (tipo, nome, email, senha) VALUES ('usuario', $1, $2, $3)`,
-        [nome, email, senhaHash]
+        `INSERT INTO contas (tipo, nome, email, senha, termos_versao_aceita, termos_aceitos_em)
+         VALUES ('usuario', $1, $2, $3, $4, CURRENT_TIMESTAMP)`,
+        [nome, email, senhaHash, termosVersao]
     );
 }
 
-async function criarLoja({ nome, email, senha, contato, bairro, categoria }) {
+async function criarLoja({ nome, email, senha, contato, bairro, categoria, termosVersao }) {
     const senhaHash = await bcrypt.hash(senha, 10);
     await pool.query(
-        `INSERT INTO contas (tipo, nome, email, senha, contato, bairro, categoria)
-         VALUES ('loja', $1, $2, $3, $4, $5, $6)`,
-        [nome, email, senhaHash, contato, bairro, categoria]
+        `INSERT INTO contas (tipo, nome, email, senha, contato, bairro, categoria,
+                            termos_versao_aceita, termos_aceitos_em)
+         VALUES ('loja', $1, $2, $3, $4, $5, $6, $7, CURRENT_TIMESTAMP)`,
+        [nome, email, senhaHash, contato, bairro, categoria, termosVersao]
     );
 }
 
